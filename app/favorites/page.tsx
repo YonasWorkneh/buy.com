@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
-import { HeartOff, ArrowLeft, AlertCircle } from "lucide-react";
+import { HeartOff, ArrowLeft, AlertCircle, Handbag } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,7 @@ import {
   clearFavorites,
   type FavoriteProductSummary,
 } from "@/lib/store/favoritesSlice";
+import { addToCart } from "@/lib/store/cartSlice";
 import { Rating } from "../components/Rating";
 
 const listVariants = {
@@ -30,6 +31,15 @@ export default function FavoritesPage() {
   const dispatch = useAppDispatch();
   const favorites = useAppSelector((state) => state.favorites.items);
   const [error, setError] = useState<string | null>(null);
+
+  const handleAddToCart = (product: FavoriteProductSummary) => {
+    try {
+      dispatch(addToCart(product));
+      toast.success("Added to cart.");
+    } catch {
+      toast.error("Unable to add to cart. Please try again.");
+    }
+  };
 
   const handleRemove = (product: FavoriteProductSummary) => {
     try {
@@ -76,9 +86,12 @@ export default function FavoritesPage() {
               </Link>
             </Button>
             {favorites.length > 0 && (
-              <Button variant="outline" onClick={handleClearAll}>
+              <button
+                onClick={handleClearAll}
+                className="rounded-full! cursor-pointer bg-none! shadow-none! border border-gray-200 text-[#1a1a1a] p-4 py-1"
+              >
                 Clear all
-              </Button>
+              </button>
             )}
           </div>
         </div>
@@ -138,23 +151,36 @@ export default function FavoritesPage() {
                   >
                     {product.category}
                   </Badge>
-                  <div>
-                    <h3 className="text-lg font-semibold text-[#1a1a1a]">
-                      {product.name}
-                    </h3>
-                    <p className="text-sm text-[#4a4a4a]">{product.price}</p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-lg font-semibold text-[#1a1a1a]">
+                        {product.name}
+                      </h3>
+                      <p className="text-sm text-[#4a4a4a]">{product.price}</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleAddToCart(product)}
+                      className="flex items-center gap-2 rounded-full px-4 py-2 bg-[#1a1a1a] hover:bg-[#2a2a2a] cursor-pointer text-white hover:text-white text-sm"
+                    >
+                      <Handbag size={16} />
+                      Add to cart
+                    </Button>
                   </div>
                 </div>
-                <div className="flex items-center justify-between border-t border-gray-100 px-4 py-3">
+                <div className="flex items-center justify-between border-t border-gray-100 px-4 py-3 gap-3">
                   <Rating rating={product.rating} />
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleRemove(product)}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50 border border-gray-200 rounded-full! px-4 py-2 cursor-pointer"
-                  >
-                    Remove
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleRemove(product)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 border border-gray-200 rounded-full! px-4 py-2 cursor-pointer"
+                    >
+                      Remove
+                    </Button>
+                  </div>
                 </div>
               </motion.div>
             ))}

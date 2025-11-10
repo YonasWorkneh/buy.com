@@ -1,14 +1,18 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
-import { Search, X } from "lucide-react";
+import { Search, X, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useProductSearch } from "@/app/hooks/useProductSearch";
 
 export default function SearchBar() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { results, isSearching, isError } = useProductSearch(searchQuery);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -38,10 +42,17 @@ export default function SearchBar() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      // TODO: Implement search logic
-      console.log("Searching for:", searchQuery);
-    }
+    // Results are handled via dropdown; no navigation on submit.
+  };
+
+  const shouldShowResults =
+    isOpen &&
+    searchQuery.trim().length >= 2 &&
+    (results.length > 0 || isSearching || isError);
+
+  const closeSearch = () => {
+    setIsOpen(false);
+    setSearchQuery("");
   };
 
   return (
@@ -84,6 +95,69 @@ export default function SearchBar() {
                 </motion.button>
               )}
             </form>
+
+            <AnimatePresence>
+              {shouldShowResults && (
+                <motion.div
+                  key="search-results"
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.2 }}
+                  className="mt-2 max-h-72 overflow-y-auto rounded-2xl border border-[#1a1a1a]/10 absolute top-full left-0 w-full bg-[#f5f5f5] z-50"
+                >
+                  <div className="py-2">
+                    {isSearching && (
+                      <div className="flex items-center gap-2 px-4 py-3 text-sm text-[#4a4a4a]">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Searching products…
+                      </div>
+                    )}
+                    {!isSearching && isError && (
+                      <div className="px-4 py-3 text-sm text-red-600">
+                        Unable to fetch products. Please try again.
+                      </div>
+                    )}
+                    {!isSearching && !isError && results.length === 0 && (
+                      <div className="px-4 py-3 text-sm text-[#4a4a4a]">
+                        No products found. Try a different keyword.
+                      </div>
+                    )}
+                    {!isSearching &&
+                      !isError &&
+                      results.map((product) => (
+                        <Link
+                          key={product.id}
+                          href={`/products/${product.id}`}
+                          onClick={closeSearch}
+                          className="flex items-start gap-3 px-4 py-3 text-sm text-[#1a1a1a] hover:bg-gray-300/20 cursor-pointer"
+                        >
+                          <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg">
+                            <Image
+                              src={
+                                product.thumbnail ||
+                                product.images?.[0] ||
+                                "/placeholder.png"
+                              }
+                              alt={product.title}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-medium leading-tight">
+                              {product.title}
+                            </p>
+                            <p className="text-xs text-[#4a4a4a]">
+                              {product.category} • ${product.price.toFixed(2)}
+                            </p>
+                          </div>
+                        </Link>
+                      ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>

@@ -7,7 +7,6 @@ import { Minus, Plus, X, ArrowLeft, ShoppingCart } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import {
   removeFromCart,
@@ -74,11 +73,11 @@ export default function CartPage() {
             <p className="text-sm uppercase tracking-[0.3em] text-[#4a4a4a]">
               Your Shopping Cart
             </p>
-            <h1 className="text-3xl md:text-4xl font-semibold text-[#1a1a1a]">
+            <h1 className="text-2xl md:text-3xl font-semibold text-[#1a1a1a]">
               Review your picks
             </h1>
           </div>
-          <Button variant="ghost" asChild>
+          <Button variant="ghost" asChild className="rounded-full!">
             <Link
               href="/shop"
               className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-5 py-2"
@@ -91,7 +90,7 @@ export default function CartPage() {
 
         <div className="space-y-4">
           {cartItems.length === 0 ? (
-            <Card className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-[#1a1a1a]/20 bg-white px-6 py-16 text-center shadow-sm">
+            <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-[#1a1a1a]/20 px-6 py-16 text-center bg-none!">
               <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#1a1a1a]/5">
                 <ShoppingCart size={28} className="text-[#1a1a1a]" />
               </div>
@@ -105,24 +104,24 @@ export default function CartPage() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">
-                <Button asChild variant="outline">
+                <Button asChild variant="outline" className="rounded-full!">
                   <Link href="/favorites">Add from favorites</Link>
                 </Button>
-                <Button asChild>
+                <Button asChild className="rounded-full!">
                   <Link href="/shop">Browse products</Link>
                 </Button>
               </div>
-            </Card>
+            </div>
           ) : (
             <>
               <div className="space-y-4">
                 {cartItems.map((item) => (
-                  <Card
+                  <div
                     key={item.id}
-                    className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between"
+                    className="flex flex-col gap-4 rounded-2xl border border-gray-200 p-4 md:flex-row md:items-center md:justify-between"
                   >
                     <div className="flex flex-col gap-4 md:flex-row md:items-center">
-                      <div className="relative h-24 w-24 overflow-hidden rounded-xl border border-gray-100 bg-white">
+                      <div className="relative h-24 w-24 overflow-hidden rounded-xl border border-gray-100">
                         <Image
                           src={item.image}
                           alt={item.name}
@@ -145,27 +144,23 @@ export default function CartPage() {
 
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
                       <div className="flex items-center gap-3">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="rounded-full"
+                        <button
+                          className="rounded-full border border-gray-200 text-[#1a1a1a] cursor-pointer size-8 grid place-items-center"
                           onClick={() => handleDecrease(item.id, item.quantity)}
                         >
                           <Minus size={12} />
-                        </Button>
+                        </button>
                         <span className="w-10 text-center text-sm font-semibold text-[#1a1a1a]">
                           {item.quantity}
                         </span>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="rounded-full"
+                        <button
+                          className="rounded-full border border-gray-200 text-[#1a1a1a] cursor-pointer size-8 grid place-items-center"
                           onClick={() => handleIncrease(item.id, item.quantity)}
                         >
-                          <Plus size={12} />
-                        </Button>
+                          <Plus size={16} />
+                        </button>
                       </div>
-                      <p className="text-sm font-semibold text-indigo-600">
+                      <p className="text-sm font-semibold text-[#1a1a1a]">
                         {formatCurrency(
                           Number(item.price.replace(/[^0-9.-]+/g, "")) *
                             item.quantity
@@ -181,14 +176,14 @@ export default function CartPage() {
                         <X size={18} />
                       </Button>
                     </div>
-                  </Card>
+                  </div>
                 ))}
               </div>
 
-              <div className="space-y-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="space-y-4 rounded-2xl border border-gray-200 p-6">
                 <div className="flex items-center justify-between text-[#1a1a1a]">
                   <span className="text-sm font-medium">Subtotal</span>
-                  <span className="text-lg font-semibold text-indigo-600">
+                  <span className="text-lg font-semibold text-[#1a1a1a]">
                     {formatCurrency(subtotal)}
                   </span>
                 </div>
@@ -196,16 +191,15 @@ export default function CartPage() {
                   Shipping taxes, and discounts calculated at checkout.
                 </p>
                 <div className="flex flex-wrap gap-3">
-                  <Button
-                    variant="outline"
+                  <button
                     onClick={handleClearCart}
-                    className="rounded-full"
+                    className=" text-sm rounded-full bg-none! border border-gray-200 text-[#1a1a1a] cursor-pointer p-4 py-1"
                   >
                     Clear cart
-                  </Button>
+                  </button>
                   <Button
                     onClick={handleCheckout}
-                    className="flex-1 rounded-full bg-indigo-600 hover:bg-indigo-700"
+                    className="flex-1 rounded-full bg-[#1a1a1a] hover:bg-[#2a2a2a] cursor-pointer"
                   >
                     Checkout
                   </Button>
@@ -215,24 +209,29 @@ export default function CartPage() {
           )}
         </div>
 
-        {favorites.length > 0 && (
+        {cartItems.length === 0 && favorites.length > 0 && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-[#1a1a1a]">
                 Favorites you might add
               </h2>
-              <Button asChild variant="ghost" size="sm">
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="rounded-full!"
+              >
                 <Link href="/favorites">Manage favorites</Link>
               </Button>
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {favorites.slice(0, 2).map((item) => (
-                <Card
+                <div
                   key={item.id}
-                  className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between"
+                  className="flex flex-col gap-3 rounded-2xl border border-gray-200 p-4 md:flex-row md:items-center md:justify-between"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="relative h-16 w-16 overflow-hidden rounded-xl border border-gray-100 bg-white">
+                    <div className="relative h-16 w-16 overflow-hidden rounded-xl">
                       <Image
                         src={item.image}
                         alt={item.name}
@@ -249,12 +248,12 @@ export default function CartPage() {
                   </div>
                   <Button
                     size="sm"
-                    className="rounded-full bg-[#1a1a1a]"
+                    className="rounded-full bg-[#1a1a1a] hover:bg-[#2a2a2a]"
                     onClick={() => handleAddFavoriteToCart(item)}
                   >
                     Add to cart
                   </Button>
-                </Card>
+                </div>
               ))}
             </div>
           </div>

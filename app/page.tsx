@@ -10,10 +10,14 @@ import {
   Sofa,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import PopularProduct from "./components/PopularProduct";
 import usePopularProducts from "./hooks/usePopularProducts";
+import { useAppDispatch } from "@/lib/store/hooks";
+import { addToCart } from "@/lib/store/cartSlice";
+import type { FavoriteProductSummary } from "@/lib/store/favoritesSlice";
 
 const reviewImages = [
   "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
@@ -61,16 +65,29 @@ const underlineVariants = {
 };
 
 export default function Home() {
+  const dispatch = useAppDispatch();
   const { products, isLoading, error } = usePopularProducts(20);
 
-  const formattedProducts = products.map((product) => ({
-    id: product.id,
-    name: product.title,
-    price: `$${Number(product.price).toFixed(2)}`,
-    image: product.images?.[0] || product.thumbnail,
-    category: product.category,
-    rating: Number(product.rating ?? 0),
-  }));
+  const formattedProducts: FavoriteProductSummary[] = products.map(
+    (product) => ({
+      id: product.id,
+      name: product.title,
+      price: `$${Number(product.price).toFixed(2)}`,
+      image: product.images?.[0] || product.thumbnail,
+      category: product.category,
+      rating: Number(product.rating ?? 0),
+    })
+  );
+
+  const handbagProduct =
+    formattedProducts.find((product) =>
+      product.name.toLowerCase().includes("bag")
+    ) ?? formattedProducts[0];
+
+  const handleAddToCart = (product: FavoriteProductSummary) => {
+    dispatch(addToCart(product));
+    toast.success("Added to cart!");
+  };
 
   const popularSkeletons = Array.from({ length: 4 }, (_, index) => index);
 
@@ -359,7 +376,10 @@ export default function Home() {
                   whileHover={{ y: -8 }}
                   className="group cursor-pointer"
                 >
-                  <PopularProduct product={product} />
+                  <PopularProduct
+                    product={product}
+                    onAddToCart={() => handleAddToCart(product)}
+                  />
                 </motion.div>
               ))}
           </motion.div>

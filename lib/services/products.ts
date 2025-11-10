@@ -59,3 +59,25 @@ export async function getProductById(id: number) {
   return response.data;
 }
 
+export interface ProductSearchResult {
+  id: number;
+  title: string;
+  price: number;
+  thumbnail: string;
+  images: string[];
+  description: string;
+  rating: number;
+  category: string;
+}
+
+interface ProductSearchResponse {
+  products: ProductSearchResult[];
+}
+
+export async function searchProducts(query: string) {
+  const response = await api.get<ProductSearchResponse>("/products/search", {
+    params: { q: query },
+  });
+
+  return response.data.products ?? [];
+}

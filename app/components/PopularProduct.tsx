@@ -1,4 +1,4 @@
-import { Heart } from "lucide-react";
+import { Handbag, Heart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
@@ -20,7 +20,15 @@ interface Product {
   rating: number;
 }
 
-export default function PopularProduct({ product }: { product: Product }) {
+interface PopularProductProps {
+  product: Product;
+  onAddToCart?: (product: FavoriteProductSummary) => void;
+}
+
+export default function PopularProduct({
+  product,
+  onAddToCart,
+}: PopularProductProps) {
   const dispatch = useAppDispatch();
   const isFavorite = useAppSelector((state) =>
     state.favorites.items.some(
@@ -28,16 +36,16 @@ export default function PopularProduct({ product }: { product: Product }) {
     )
   );
 
-  const handleToggleFavorite = () => {
-    const payload: FavoriteProductSummary = {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      category: product.category,
-      rating: product.rating,
-    };
+  const payload: FavoriteProductSummary = {
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    image: product.image,
+    category: product.category,
+    rating: product.rating,
+  };
 
+  const handleToggleFavorite = () => {
     try {
       dispatch(toggleFavorite(payload));
       if (isFavorite) {
@@ -83,27 +91,41 @@ export default function PopularProduct({ product }: { product: Product }) {
         <div className="-ml-2">
           <Rating rating={product.rating} />
         </div>
-        <Button
-          asChild
-          variant="outline"
-          size="sm"
-          className="rounded-full border border-gray-200 bg-transparent px-4 py-2 shadow-none"
-        >
-          <Link href={`/products/${product.id}`}>View details</Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="rounded-full border border-gray-200 bg-transparent px-4 py-2 shadow-none"
+          >
+            <Link href={`/products/${product.id}`}>View details</Link>
+          </Button>
+        </div>
       </div>
 
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="absolute top-3 right-3 bg-white border border-gray-200 text-[#1a1a1a] hover:bg-white"
-        onClick={handleToggleFavorite}
-        aria-pressed={isFavorite}
-        aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-      >
-        <Heart size={20} className={isFavorite ? "fill-[#1a1a1a]" : ""} />
-      </Button>
+      <div className="absolute top-3 right-3 flex items-center gap-2">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="bg-none! border border-gray-200 text-[#1a1a1a] cursor-pointer"
+          onClick={handleToggleFavorite}
+          aria-pressed={isFavorite}
+          aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+        >
+          <Heart size={20} className={isFavorite ? "fill-[#1a1a1a]" : ""} />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="bg-none! border border-gray-200 text-[#1a1a1a] cursor-pointer"
+          onClick={() => onAddToCart?.(product)}
+          aria-label="Add to cart"
+        >
+          <Handbag size={20} />
+        </Button>
+      </div>
     </div>
   );
 }
