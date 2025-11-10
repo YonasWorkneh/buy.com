@@ -1,43 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Buy.com — Modern E-commerce Experience
 
-## Getting Started
+Buy.com is a fully featured e-commerce experience built with Next.js 14 and the App Router. It blends a high-end landing page, data-driven shopping flows, and customer tooling (favorites, cart, product detail, contact, etc.) with admin-style conveniences like product creation/editing. The UI is animated with Framer Motion and styled with Tailwind + shadcn/ui.
 
-First, run the development server:
+---
+
+## ✨ Highlights
+
+- **Animated Landing Page** – Hero skewed imagery, scroll-triggered sections, framer-motion enhanced reviews/categories, and a “Popular Products” showcase.
+- **Global Navigation & Footer** – Persistent header/footer via `app/layout.tsx`, animated nav hover states, active route indicators, responsive search, and live cart/favorite counters.
+- **Search Experience** – Expanding search input with debounce-backed API results, loading states, and quick navigation to detail pages.
+- **Popular Products** – React Query powered section with skeleton placeholders, “View All” linking into the shop, and shadcn components for consistent styling.
+- **Shop / Catalog** – Grid/list toggle, server-driven filtering (categories, availability), shadcn select sorting, pagination (21 items/page), and loader/empty/error states.
+- **Product Detail** – Amazon-inspired layout with gallery carousel, rating, bullet lists, add-to-cart actions, and toast feedback.
+- **Favorites** – Redux Toolkit slice persisted to localStorage, with dedicated page for management, and hot-toast notifications.
+- **Cart** – Responsive summary layout, quantity controls, empty state messaging, subtotal computation, and “favorites you might add” suggestions.
+- **My Listings ("My Ads")** – Product creation/editing workflow using DummyJSON `/products/add`, React Query, and local IndexedDB storage to persist custom images, with edit/delete operations and responsive cards.
+- **Contact Page** – Animated two-column layout (info + form) aligned with brand styling.
+- **Tech Enhancements** – `usePopularProducts`, `useProductSearch`, global React Query + Redux providers, axios API abstraction, and reusable UI primitives (Badge, Button, Card, Skeleton, Select).
+
+---
+
+## 🧠 Tech Stack
+
+- **Framework**: Next.js 14 (App Router, React Server Components)
+- **State & Data**: Redux Toolkit, React Query, Axios, IndexedDB
+- **UI/Styling**: Tailwind CSS, shadcn/ui, Framer Motion, Lucide icons, Google Fonts (Poppins)
+- **Tooling**: TypeScript, ESLint, Vercel-ready configuration
+- **APIs**: [DummyJSON](https://dummyjson.com) fake store API (products, categories, search)
+
+### Environment Variable
+
+```bash
+NEXT_PUBLIC_API_BASE_URL=https://dummyjson.com/
+```
+
+---
+
+## 🚀 Getting Started
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit http://localhost:3000 to explore the site. Editing files within `app/` will hot-reload changes automatically.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-you will need to put .env file for accessing the backend which is free for use :
+To create a production build:
 
 ```bash
-NEXT_PUBLIC_API_BASE_URL =https://dummyjson.com/
+npm run build
+npm run start
 ```
 
+---
+
+## 🖼️ Screenshots
+
+All captures live under `public/screenshots/` (commit your own high-resolution grabs from Chrome/Edge DevTools or your device).
+
+| Landing Page                               | Shop (Grid)                          | Product Detail                                           | Cart                                 | My Listings                                   |
+| ------------------------------------------ | ------------------------------------ | -------------------------------------------------------- | ------------------------------------ | --------------------------------------------- |
+| ![Landing](public/screenshots/landing.png) | ![Shop](public/screenshots/shop.png) | ![Product Detail](public/screenshots/product-detail.png) | ![Cart](public/screenshots/cart.png) | ![My Listings](public/screenshots/my-ads.png) |
+
+> Tip: create screenshots with consistent dimensions (e.g., 1440×900) to keep the grid tidy.
+
+---
+
+## 📚 Additional Notes
+
+- Product creation/editing stores local images in IndexedDB (`lib/db/myListings.ts`) so DummyJSON only receives metadata—handy for prototyping admin-like experiences.
+- The mobile layout is fully responsive: headers collapse into a motion-animated drawer, filters stack, and the cart summary becomes sticky on larger breakpoints.
+- Redux Toolkit slices (`lib/store`) manage favorites and cart, persisting to localStorage for a seamless return experience.
+
+---
+
+## 📖 Learn More
+
+- [Next.js Documentation](https://nextjs.org/docs) – Latest features and API guides.
+- [shadcn/ui](https://ui.shadcn.com/) – Component usage and theming tips.
+- [Framer Motion](https://www.framer.com/motion/) – Declarative animation sequences.
+- [DummyJSON API Docs](https://dummyjson.com/docs/products) – Endpoints used throughout the app.
+
+---
+
+## 📦 Deployment
+
+you can find the live demo at [buy.com](https://buycom-psi.vercel.app/)
+
+Enjoy exploring and extending Buy.com! 💼🛒
