@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { toast } from "react-hot-toast";
 
 type TextFieldKey = "name" | "phone" | "email" | "subject";
 
@@ -66,7 +67,7 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.agree) {
-      alert("Please acknowledge our policies before submitting.");
+      toast.error("Please acknowledge our policies before submitting.");
       return;
     }
     setIsSubmitting(true);
@@ -81,7 +82,9 @@ export default function ContactPage() {
       message: "",
       agree: false,
     });
-    alert("Thanks for reaching out. Our concierge team will respond shortly.");
+    toast.success(
+      "Thanks for reaching out. Our team will respond shortly."
+    );
   };
 
   return (
