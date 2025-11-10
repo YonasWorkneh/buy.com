@@ -9,15 +9,16 @@ import { Heart, Handbag, Check } from "lucide-react";
 export default function ProductGrid({
   product,
   onAddToCart,
+  onToggleFavorite,
   isFavorite,
   isInCart,
 }: {
   product: PopularProduct;
   onAddToCart: (product: PopularProduct) => void;
+  onToggleFavorite: (product: PopularProduct) => void;
   isFavorite: boolean;
   isInCart: boolean;
 }) {
-  
   return (
     <article
       key={product.id}
@@ -57,7 +58,7 @@ export default function ProductGrid({
             variant="ghost"
             size="sm"
             className="rounded-full size-8 bg-transparent text-[#1a1a1a] border border-gray-200  cursor-pointer"
-            onClick={() => onAddToCart(product)}
+            onClick={() => onToggleFavorite(product)}
           >
             <Heart size={16} className={isFavorite ? "fill-[#1a1a1a]" : ""} />
           </Button>

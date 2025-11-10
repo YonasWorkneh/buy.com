@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LayoutGrid, Rows3, SlidersHorizontal } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { addToCart } from "@/lib/store/cartSlice";
+import { toggleFavorite } from "@/lib/store/favoritesSlice";
 import type { FavoriteProductSummary } from "@/lib/store/favoritesSlice";
 import { toast } from "react-hot-toast";
 import {
@@ -143,6 +144,19 @@ export default function ShopPage() {
     };
     dispatch(addToCart(payload));
     toast.success("Added to cart!");
+  };
+
+  const handleAddToFavorite = (product: PopularProduct) => {
+    const payload: FavoriteProductSummary = {
+      id: product.id,
+      name: product.title,
+      price: `$${Number(product.price).toFixed(2)}`,
+      image: product.images?.[0] || product.thumbnail,
+      category: product.category,
+      rating: Number(product.rating ?? 0),
+    };
+    dispatch(toggleFavorite(payload));
+    toast.success("Added to favorites!");
   };
 
   const startEntry = filteredProducts.length ? page * 21 + 1 : 0;
@@ -340,6 +354,7 @@ export default function ShopPage() {
                       key={product.id}
                       product={product}
                       onAddToCart={handleAddToCart}
+                      onToggleFavorite={handleAddToFavorite}
                       isFavorite={isInFavorite}
                       isInCart={isInCart}
                     />
@@ -358,6 +373,7 @@ export default function ShopPage() {
                       key={product.id}
                       product={product}
                       onAddToCart={handleAddToCart}
+                      onToggleFavorite={handleAddToFavorite}
                       isFavorite={isInFavorite}
                       isInCart={isInCart}
                     />

@@ -9,11 +9,13 @@ import { useRouter } from "next/navigation";
 export default function ProductList({
   product,
   onAddToCart,
+  onToggleFavorite,
   isFavorite,
   isInCart,
 }: {
   product: PopularProduct;
   onAddToCart: (product: PopularProduct) => void;
+  onToggleFavorite: (product: PopularProduct) => void;
   isFavorite: boolean;
   isInCart: boolean;
 }) {
@@ -64,7 +66,7 @@ export default function ProductList({
                 variant="ghost"
                 size="sm"
                 className="rounded-full size-8 bg-transparent text-[#1a1a1a] border border-gray-200  cursor-pointer"
-                onClick={() => onAddToCart(product)}
+                onClick={() => onToggleFavorite(product)}
               >
                 <Heart
                   size={16}
