@@ -1,10 +1,18 @@
 "use client";
 
-import { type FormEvent, useMemo, useState } from "react";
+import {
+  type ChangeEvent,
+  type FormEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  startTransition,
+} from "react";
 import Image from "next/image";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import { CheckCircle2, Loader2, Plus, Save, UploadCloud } from "lucide-react";
+import { CheckCircle2, Loader2, UploadCloud } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -13,14 +21,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { api } from "@/lib/api";
-import { getProductCategories } from "@/lib/services/products";
+import {
+  type CreateProductPayload,
+  getProductCategories,
+} from "@/lib/services/products";
+import {
+  addListing,
+  getListingById,
+  type MyListingRecord,
+} from "@/lib/db/myListings";
+import useCreateProduct from "@/app/hooks/useCreateProduct";
+import useUpdateProduct from "@/app/hooks/useUpdateProduct";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type FormState = {
   title: string;
   description: string;
-  sizes: string[];
-  gender: string;
   price: string;
   stock: string;
   discount: string;
@@ -28,15 +44,10 @@ type FormState = {
   category: string;
   images: string[];
 };
-
-const AVAILABLE_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
-const GENDER_OPTIONS = ["Men", "Women", "Unisex"];
 const DRAFT_STORAGE_KEY = "buy-com-add-product-draft";
 const createDefaultFormState = (): FormState => ({
   title: "",
   description: "",
-  sizes: [],
-  gender: "",
   price: "",
   stock: "",
   discount: "",
@@ -46,6 +57,13 @@ const createDefaultFormState = (): FormState => ({
 });
 
 export default function AddProductPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const editIdParam = searchParams.get("editId");
+  const editId = editIdParam ? Number(editIdParam) : null;
+  const [editingListing, setEditingListing] = useState<MyListingRecord | null>(
+    null
+  );
   const [formState, setFormState] = useState<FormState>(() => {
     if (typeof window === "undefined") {
       return createDefaultFormState();
@@ -64,7 +82,8 @@ export default function AddProductPage() {
     }
   });
   const [primaryImageIndex, setPrimaryImageIndex] = useState(0);
-  const [newImageUrl, setNewImageUrl] = useState("");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isPrefilling, setIsPrefilling] = useState(false);
 
   const { data: categories, isLoading: isLoadingCategories } = useQuery({
     queryKey: ["product-categories"],
@@ -72,48 +91,141 @@ export default function AddProductPage() {
     staleTime: 1000 * 60 * 60,
   });
 
-  const addProductMutation = useMutation({
-    mutationFn: async () => {
-      const payload = {
-        title: formState.title,
-        description: formState.description,
-        price: Number(formState.price) || 0,
-        discountPercentage: Number(formState.discount) || 0,
-        stock: Number(formState.stock) || 0,
-        category: formState.category,
-        thumbnail:
-          formState.images[primaryImageIndex] ?? formState.images[0] ?? "",
-        images: formState.images,
-        tags: formState.sizes,
-        meta: {
-          gender: formState.gender,
-          discountType: formState.discountType,
-        },
-      };
+  useEffect(() => {
+    if (!editId) {
+      return;
+    }
+    startTransition(() => setIsPrefilling(true));
+    getListingById(editId)
+      .then((record) => {
+        if (!record) {
+          toast.error("We couldn't find that listing locally.");
+          router.replace("/myads/new");
+          return;
+        }
+        setEditingListing(record);
+        setFormState({
+          title: record.title ?? "",
+          description: record.description ?? "",
+          price: record.price ? String(record.price) : "",
+          stock: record.stock ? String(record.stock) : "",
+          discount: record.discountPercentage
+            ? String(record.discountPercentage)
+            : "",
+          discountType: record.discountType ?? "",
+          category: record.category ?? "",
+          images: record.images ?? [],
+        });
+        setPrimaryImageIndex(0);
+      })
+      .catch((error) => {
+        console.error("Failed to load listing for edit", error);
+        toast.error("Unable to load listing for editing.");
+      })
+      .finally(() => startTransition(() => setIsPrefilling(false)));
+  }, [editId, router]);
 
-      const { data } = await api.post("/products/add", payload);
-      return data;
-    },
-    onSuccess: () => {
+  const createProductMutation = useCreateProduct({
+    onSuccess: async (response) => {
       toast.success("Product added successfully!");
       if (typeof window !== "undefined") {
         window.localStorage.removeItem(DRAFT_STORAGE_KEY);
       }
+      try {
+        const parsedPrice = Number(formState.price) || 0;
+        const parsedDiscount = Number(formState.discount) || 0;
+        const parsedStock = Number(formState.stock) || 0;
+        const record: MyListingRecord = {
+          id: response.id,
+          title: response.title ?? formState.title,
+          description: response.description ?? formState.description,
+          category: response.category ?? formState.category,
+          price:
+            typeof response.price === "number" ? response.price : parsedPrice,
+          discountPercentage: parsedDiscount,
+          discountType: formState.discountType || undefined,
+          stock:
+            typeof response.stock === "number" ? response.stock : parsedStock,
+          thumbnail:
+            formState.images[primaryImageIndex] ??
+            response.thumbnail ??
+            response.images?.[0],
+          images:
+            formState.images.length > 0
+              ? formState.images
+              : response.images ?? [],
+          remoteId: response.id,
+          createdAt: new Date().toISOString(),
+          source: "api",
+          raw: response,
+        };
+        await addListing(record);
+      } catch (error) {
+        console.error("Failed to persist listing", error);
+        toast.error(
+          "Saved to server, but we couldn't store it locally. Please refresh."
+        );
+      }
       setFormState(createDefaultFormState());
       setPrimaryImageIndex(0);
-      setNewImageUrl("");
+      router.push("/myads");
     },
-    onError: () => {
+    onError: (err) => {
+      console.error("Failed to create product", err);
       toast.error("Unable to add product. Please try again.");
     },
   });
+
+  const updateProductMutation = useUpdateProduct({
+    onSuccess: async (response, variables) => {
+      toast.success("Product updated successfully!");
+      try {
+        const parsedPrice = Number(formState.price) || 0;
+        const parsedDiscount = Number(formState.discount) || 0;
+        const parsedStock = Number(formState.stock) || 0;
+        const record: MyListingRecord = {
+          id: editingListing?.id ?? variables.id,
+          title: response.title ?? formState.title,
+          description: response.description ?? formState.description,
+          category: response.category ?? formState.category,
+          price:
+            typeof response.price === "number" ? response.price : parsedPrice,
+          discountPercentage: parsedDiscount,
+          discountType: formState.discountType || undefined,
+          stock:
+            typeof response.stock === "number" ? response.stock : parsedStock,
+          thumbnail:
+            formState.images[primaryImageIndex] ??
+            response.thumbnail ??
+            response.images?.[0],
+          images: formState.images,
+          remoteId: editingListing?.remoteId ?? variables.id,
+          createdAt: editingListing?.createdAt ?? new Date().toISOString(),
+          source: "api",
+          raw: response,
+        };
+        await addListing(record, { allowReplace: true });
+      } catch (error) {
+        console.error("Failed to persist updated listing", error);
+        toast.error("Updated remotely, but failed to store locally.");
+      }
+      router.push("/myads");
+    },
+    onError: (err) => {
+      console.error("Failed to update product", err);
+      toast.error("Unable to update product. Please try again.");
+    },
+  });
+
+  const activeMutation = editId ? updateProductMutation : createProductMutation;
 
   const isSubmitDisabled =
     !formState.title ||
     !formState.description ||
     !formState.category ||
     formState.images.length === 0 ||
-    addProductMutation.isPending;
+    activeMutation.isPending ||
+    isPrefilling;
 
   const primaryImage = useMemo(
     () => formState.images[primaryImageIndex] ?? "",
@@ -127,44 +239,35 @@ export default function AddProductPage() {
     }));
   };
 
-  const toggleSize = (size: string) => {
-    setFormState((prev) => {
-      const exists = prev.sizes.includes(size);
-      const nextSizes = exists
-        ? prev.sizes.filter((item) => item !== size)
-        : [...prev.sizes, size];
-      return {
-        ...prev,
-        sizes: nextSizes,
-      };
+  const fileToDataUrl = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(file);
     });
-  };
 
-  const handleAddImage = () => {
-    const trimmed = newImageUrl.trim();
-    if (!trimmed) {
-      toast.error("Please provide an image URL.");
+  const handleFileSelection = async (event: ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) {
       return;
     }
 
-    let added = false;
-    setFormState((prev) => {
-      if (prev.images.includes(trimmed)) {
-        toast.error("This image is already added.");
-        return prev;
-      }
-      const nextImages = [...prev.images, trimmed];
-      if (nextImages.length === 1) {
+    const fileArray = Array.from(files);
+    try {
+      const converted = await Promise.all(fileArray.map(fileToDataUrl));
+      const hadImages = formState.images.length > 0;
+      setFormState((prev) => ({
+        ...prev,
+        images: [...prev.images, ...converted],
+      }));
+      if (!hadImages && converted.length > 0) {
         setPrimaryImageIndex(0);
       }
-      added = true;
-      return {
-        ...prev,
-        images: nextImages,
-      };
-    });
-    if (added) {
-      setNewImageUrl("");
+      event.target.value = "";
+    } catch (error) {
+      console.error("Failed to read files", error);
+      toast.error("We couldn't process the selected files.");
     }
   };
 
@@ -190,16 +293,31 @@ export default function AddProductPage() {
     });
   };
 
-  const handleSaveDraft = () => {
-    if (typeof window === "undefined") return;
-
-    window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(formState));
-    toast.success("Draft saved locally.");
-  };
-
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    addProductMutation.mutate();
+    const payload: CreateProductPayload = {
+      title: formState.title,
+      description: formState.description,
+      price: Number(formState.price) || 0,
+      discountPercentage: Number(formState.discount) || 0,
+      stock: Number(formState.stock) || 0,
+      category: formState.category,
+      discountType: formState.discountType,
+    };
+
+    if (editId) {
+      const remoteId = editingListing?.remoteId ?? editingListing?.id ?? editId;
+      if (!remoteId) {
+        toast.error("Missing product identifier for update.");
+        return;
+      }
+      updateProductMutation.mutate({
+        id: remoteId,
+        payload,
+      });
+    } else {
+      createProductMutation.mutate(payload);
+    }
   };
 
   return (
@@ -208,11 +326,12 @@ export default function AddProductPage() {
         <header className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-3xl font-semibold text-[#1a1a1a]">
-              Add New Product
+              {editId ? "Edit Product" : "Add New Product"}
             </h1>
             <p className="mt-2 text-sm text-[#4a4a4a]">
-              Complete the product details below to publish a new item to your
-              storefront.
+              {editId
+                ? "Update the product details and save your changes."
+                : "Complete the product details below to publish a new item to your storefront."}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -220,15 +339,16 @@ export default function AddProductPage() {
               type="submit"
               form="add-product-form"
               className={`rounded-full bg-[#1a1a1a] text-white hover:bg-[#2d2d2d] ${
-                isSubmitDisabled ? "cursor-not-allowed" : ""
+                isSubmitDisabled ? "cursor-not-allowed opacity-70" : ""
               }`}
+              disabled={isSubmitDisabled || isPrefilling}
             >
-              {addProductMutation.isPending ? (
+              {activeMutation.isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
                 <CheckCircle2 className="mr-2 h-4 w-4" />
               )}
-              Add Product
+              {editId ? "Save Changes" : "Add Product"}
             </Button>
           </div>
         </header>
@@ -239,7 +359,7 @@ export default function AddProductPage() {
           className="grid gap-6 lg:grid-cols-2"
         >
           <div className="space-y-6">
-            <div className="rounded-3xl p-6 shadow-sm">
+            <div className="rounded-3xl p-6 border border-gray-200">
               <h2 className="text-lg font-semibold text-[#1a1a1a]">
                 General Information
               </h2>
@@ -281,7 +401,7 @@ export default function AddProductPage() {
               </div>
             </div>
 
-            <div className="rounded-3xl p-6 shadow-sm">
+            <div className="rounded-3xl p-6 border border-gray-200">
               <h2 className="text-lg font-semibold text-[#1a1a1a]">
                 Pricing & Stock
               </h2>
@@ -289,9 +409,9 @@ export default function AddProductPage() {
                 Set pricing, inventory count, and promotions.
               </p>
               <div className="mt-6 grid gap-4 md:grid-cols-2">
-                <label className="block">
+                <div className="flex flex-col gap-2">
                   <span className="text-sm font-medium text-[#1a1a1a]">
-                    Base Price
+                    Price
                   </span>
                   <input
                     type="number"
@@ -304,8 +424,8 @@ export default function AddProductPage() {
                     className="mt-2 w-full rounded-2xl border border-[#d8d5ce] bg-[#faf6ef] px-4 py-3 text-sm text-[#1a1a1a] focus:border-[#1a1a1a] focus:outline-none"
                     placeholder="e.g. 79.99"
                   />
-                </label>
-                <label className="block">
+                </div>
+                <div className="flex flex-col gap-2">
                   <span className="text-sm font-medium text-[#1a1a1a]">
                     Stock
                   </span>
@@ -319,48 +439,52 @@ export default function AddProductPage() {
                     className="mt-2 w-full rounded-2xl border border-[#d8d5ce] bg-[#faf6ef] px-4 py-3 text-sm text-[#1a1a1a] focus:border-[#1a1a1a] focus:outline-none"
                     placeholder="e.g. 50"
                   />
-                </label>
-                <label className="block">
-                  <span className="text-sm font-medium text-[#1a1a1a]">
-                    Discount %
-                  </span>
-                  <input
-                    type="number"
-                    min="0"
-                    max="90"
-                    value={formState.discount}
-                    onChange={(event) =>
-                      handleFieldChange("discount", event.target.value)
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-3xl p-6 border border-gray-200">
+              <h2 className="text-lg font-semibold text-[#1a1a1a]">Category</h2>
+              <p className="mt-1 text-sm text-[#4a4a4a]">
+                Choose the most relevant category from DummyJSON catalog.
+              </p>
+              <div className="mt-4">
+                {isLoadingCategories ? (
+                  <div className="rounded-2xl border border-[#d8d5ce] bg-[#faf6ef] px-4 py-3 text-sm text-[#4a4a4a]">
+                    Loading categories...
+                  </div>
+                ) : (
+                  <Select
+                    value={formState.category}
+                    onValueChange={(value) =>
+                      handleFieldChange("category", value)
                     }
-                    className="mt-2 w-full rounded-2xl border border-[#d8d5ce] bg-[#faf6ef] px-4 py-3 text-sm text-[#1a1a1a] focus:border-[#1a1a1a] focus:outline-none"
-                    placeholder="e.g. 10"
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-sm font-medium text-[#1a1a1a]">
-                    Discount Type
-                  </span>
-                  <input
-                    type="text"
-                    value={formState.discountType}
-                    onChange={(event) =>
-                      handleFieldChange("discountType", event.target.value)
-                    }
-                    className="mt-2 w-full rounded-2xl border border-[#d8d5ce] bg-[#faf6ef] px-4 py-3 text-sm text-[#1a1a1a] focus:border-[#1a1a1a] focus:outline-none"
-                    placeholder="e.g. Spring Sale"
-                  />
-                </label>
+                  >
+                    <SelectTrigger className="w-full rounded-2xl border border-[#d8d5ce] bg-[#faf6ef] px-4 py-3 text-left text-sm text-[#1a1a1a] shadow-none focus:border-[#9182d9] focus:outline-none">
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories?.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          <span className="capitalize pl-5">
+                            {category.replace(/-/g, " ")}
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
             </div>
           </div>
 
           <div className="space-y-6">
-            <div className="rounded-3xl p-6 shadow-sm">
+            <div className="rounded-3xl p-6 border border-gray-200">
               <h2 className="text-lg font-semibold text-[#1a1a1a]">
                 Upload Images
               </h2>
               <p className="mt-1 text-sm text-[#4a4a4a]">
-                Add a primary image and supporting gallery shots.
+                Upload product photography directly from your device.
               </p>
 
               <div className="mt-6 space-y-4">
@@ -375,9 +499,12 @@ export default function AddProductPage() {
                       />
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center justify-center gap-3 py-12 text-center text-sm text-[#4a4a4a]">
+                    <div
+                      className="flex flex-col items-center justify-center gap-3 py-12 text-center text-sm text-[#4a4a4a] cursor-pointer"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
                       <UploadCloud className="h-8 w-8 text-[#1a1a1a]" />
-                      Add at least one image URL to preview it here.
+                      Click here or drag and drop images to upload.
                     </div>
                   )}
                 </div>
@@ -416,61 +543,27 @@ export default function AddProductPage() {
                         </div>
                       );
                     })}
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="flex h-20 w-20 items-center justify-center rounded-xl border border-dashed border-[#d8d5ce] bg-[#faf6ef] text-[#1a1a1a] transition hover:border-[#1a1a1a] cursor-pointer"
+                      aria-label="Add another image"
+                    >
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#1a1a1a46] text-2xl leading-none">
+                        +
+                      </span>
+                    </button>
                   </div>
                 )}
 
-                <div className="flex flex-col gap-3 md:flex-row">
-                  <input
-                    type="url"
-                    value={newImageUrl}
-                    onChange={(event) => setNewImageUrl(event.target.value)}
-                    placeholder="https://..."
-                    className="w-full rounded-2xl border border-[#d8d5ce] bg-[#faf6ef] px-4 py-3 text-sm text-[#1a1a1a] focus:border-[#1a1a1a] focus:outline-none"
-                  />
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    className="rounded-full bg-[#1a1a1a] text-white hover:bg-[#2d2d2d] cursor-pointer"
-                    onClick={handleAddImage}
-                  >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Image
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-3xl p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-[#1a1a1a]">Category</h2>
-              <p className="mt-1 text-sm text-[#4a4a4a]">
-                Choose the most relevant category from DummyJSON catalog.
-              </p>
-              <div className="mt-4">
-                {isLoadingCategories ? (
-                  <div className="rounded-2xl border border-[#d8d5ce] bg-[#faf6ef] px-4 py-3 text-sm text-[#4a4a4a]">
-                    Loading categories...
-                  </div>
-                ) : (
-                  <Select
-                    value={formState.category}
-                    onValueChange={(value) =>
-                      handleFieldChange("category", value)
-                    }
-                  >
-                    <SelectTrigger className="w-full rounded-2xl border border-[#d8d5ce] bg-[#faf6ef] px-4 py-3 text-left text-sm text-[#1a1a1a] shadow-none focus:border-[#9182d9] focus:outline-none">
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories?.map((category) => (
-                        <SelectItem key={category} value={category}>
-                          <span className="capitalize pl-5">
-                            {category.replace(/-/g, " ")}
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  hidden
+                  onChange={handleFileSelection}
+                />
               </div>
             </div>
           </div>

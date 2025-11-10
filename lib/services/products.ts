@@ -60,6 +60,46 @@ export async function getProductById(id: number) {
   return response.data;
 }
 
+export interface CreateProductPayload {
+  title: string;
+  description: string;
+  price: number;
+  discountPercentage?: number;
+  stock: number;
+  category: string;
+  discountType?: string;
+  [key: string]: unknown;
+}
+
+export type CreateProductResponse = ProductDetail & { id: number };
+
+export async function createProduct(payload: CreateProductPayload) {
+  const { data } = await api.post<CreateProductResponse>(
+    "/products/add",
+    payload
+  );
+  return data;
+}
+
+export type UpdateProductPayload = Partial<CreateProductPayload>;
+
+export async function updateProduct(
+  id: number,
+  payload: UpdateProductPayload,
+  method: "patch" | "put" = "patch"
+) {
+  const clientMethod = method === "put" ? api.put : api.patch;
+  const { data } = await clientMethod<CreateProductResponse>(
+    `/products/${id}`,
+    payload
+  );
+  return data;
+}
+
+export async function deleteProduct(id: number) {
+  await api.delete(`/products/${id}`);
+}
+
 export async function getProductCategories() {
   const response = await api.get<string[]>("/products/category-list");
   return response.data;

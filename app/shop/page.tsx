@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -13,8 +11,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Handbag,
-  Heart,
   LayoutGrid,
   Rows3,
   SlidersHorizontal,
@@ -23,7 +19,6 @@ import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { addToCart } from "@/lib/store/cartSlice";
 import type { FavoriteProductSummary } from "@/lib/store/favoritesSlice";
 import { toast } from "react-hot-toast";
-import { useRouter } from "next/navigation";
 import {
   Select,
   SelectContent,
@@ -71,7 +66,6 @@ const availabilityFilters = [
 ];
 
 export default function ShopPage() {
-  const router = useRouter();
   const dispatch = useAppDispatch();
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -100,8 +94,8 @@ export default function ShopPage() {
       return getProductsList(
         {
           ...selectedSort.params,
-          limit: 15,
-          skip: page * 15,
+          limit: 21,
+          skip: page * 21,
         },
         category
       );
@@ -130,7 +124,7 @@ export default function ShopPage() {
   }, [productsResponse, selectedAvailability]);
 
   const totalProducts = productsResponse?.total ?? 0;
-  const totalPages = totalProducts ? Math.ceil(totalProducts / 15) : 0;
+  const totalPages = totalProducts ? Math.ceil(totalProducts / 21) : 0;
 
   const toggleAvailability = (value: string) => {
     setSelectedAvailability((prev) => {
@@ -155,9 +149,9 @@ export default function ShopPage() {
     toast.success("Added to cart!");
   };
 
-  const startEntry = filteredProducts.length ? page * 15 + 1 : 0;
+  const startEntry = filteredProducts.length ? page * 21 + 1 : 0;
   const endEntry = filteredProducts.length
-    ? page * 15 + filteredProducts.length
+    ? page * 21 + filteredProducts.length
     : 0;
   const favorites = useAppSelector((state) => state.favorites.items);
   const cart = useAppSelector((state) => state.cart.items);
@@ -242,11 +236,8 @@ export default function ShopPage() {
           </div>
         </header>
 
-        <div
-          className="grid gap-10"
-          style={{ gridTemplateColumns: "260px 1fr" }}
-        >
-          <aside className="space-y-10">
+        <div className="flex flex-col gap-8 lg:grid lg:grid-cols-[260px_1fr] lg:gap-10">
+          <aside className="order-2 space-y-10 lg:order-1 lg:sticky lg:top-28 lg:h-fit">
             <div>
               <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-[#1a1a1a]">
                 <SlidersHorizontal size={16} />
@@ -329,7 +320,7 @@ export default function ShopPage() {
             </div>
           </aside>
 
-          <main>
+          <main className="order-1 lg:order-2">
             {isLoading ? (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                 {Array.from({ length: 6 }).map((_, index) => (

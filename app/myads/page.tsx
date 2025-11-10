@@ -2,25 +2,70 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { RefreshCcw, Plus, PackageSearch } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Plus, PackageSearch, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getProductsList, type PopularProduct } from "@/lib/services/products";
 import { motion } from "framer-motion";
+import {
+  deleteListing,
+  getListings,
+  type MyListingRecord,
+} from "@/lib/db/myListings";
+import useDeleteProduct from "@/app/hooks/useDeleteProduct";
+import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 export default function MyAdsPage() {
-  const { data, isLoading, isError, refetch, isRefetching } = useQuery({
-    queryKey: ["my-ads-products"],
-    queryFn: () =>
-      getProductsList({ limit: 30, sortBy: "title", order: "asc" }),
-    placeholderData: (prev) => prev,
+  const [listings, setListings] = useState<MyListingRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
+  const deleteProductMutation = useDeleteProduct({
+    onSuccess: async () => {
+      if (pendingDeleteId != null) {
+        await deleteListing(pendingDeleteId);
+        setListings((prev) =>
+          prev.filter((item) => item.id !== pendingDeleteId)
+        );
+      }
+      toast.success("Listing deleted.");
+    },
+    onError: (err) => {
+      console.error("Failed to delete product", err);
+      toast.error("Unable to delete product. Please try again.");
+    },
+    onSettled: () => {
+      setPendingDeleteId(null);
+    },
   });
 
-  const products = useMemo<PopularProduct[]>(
-    () => data?.products ?? [],
-    [data?.products]
+  const loadListings = useCallback(async () => {
+    try {
+      setError(null);
+      const data = await getListings();
+      setListings(data);
+    } catch (err) {
+      console.error("Failed to load listings", err);
+      setError("Unable to read listings from your device.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadListings();
+  }, [loadListings]);
+
+  const sortedListings = useMemo(
+    () =>
+      [...listings].sort((a, b) => {
+        const aDate = a.createdAt ?? "";
+        const bDate = b.createdAt ?? "";
+        return bDate.localeCompare(aDate);
+      }),
+    [listings]
   );
 
   return (
@@ -28,26 +73,14 @@ export default function MyAdsPage() {
       <div className="mx-auto max-w-7xl">
         <header className="mb-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-3xl font-semibold text-[#1a1a1a]">
-              My Product Listings
+            <h1 className="text-2xl font-semibold text-[#1a1a1a]">
+              My Listings
             </h1>
             <p className="mt-2 text-sm text-[#4a4a4a]">
               Review every product you have published through the marketplace.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              className="rounded-full"
-              onClick={() => refetch()}
-              disabled={isRefetching}
-            >
-              <RefreshCcw
-                className={`mr-2 h-4 w-4 ${isRefetching ? "animate-spin" : ""}`}
-              />
-              Refresh
-            </Button>
             <Button
               asChild
               className="rounded-full bg-[#1a1a1a] text-white hover:bg-[#2d2d2d]"
@@ -66,20 +99,17 @@ export default function MyAdsPage() {
               <Skeleton key={index} className="h-72 w-full rounded-2xl" />
             ))}
           </div>
-        ) : isError ? (
+        ) : error ? (
           <div className="flex flex-col items-center justify-center gap-3 rounded-3xl border border-red-200 bg-red-50 px-6 py-16 text-center text-red-600">
             <PackageSearch className="h-10 w-10" />
             <p className="text-lg font-semibold">
               We couldn&apos;t load your product catalog.
             </p>
-            <p className="text-sm">
-              Please refresh to try again or contact support if the issue
-              persists.
-            </p>
+            <p className="text-sm">{error}</p>
           </div>
-        ) : products.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-4 rounded-3xl border border-dashed border-[#d8d5ce] bg-white px-6 py-16 text-center">
-            <PackageSearch className="h-10 w-10 text-[#9182d9]" />
+        ) : sortedListings.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-4 rounded-3xl border border-dashed border-[#d8d5ce] px-6 py-16 text-center">
+            <PackageSearch className="h-10 w-10 text-[#1a1a1a]" />
             <div>
               <p className="text-lg font-semibold text-[#1a1a1a]">
                 No products yet
@@ -91,7 +121,7 @@ export default function MyAdsPage() {
             <Button asChild className="rounded-full bg-[#1a1a1a] text-white">
               <Link href="/myads/new">
                 <Plus className="mr-2 h-4 w-4" />
-                Create Product
+                Add Product
               </Link>
             </Button>
           </div>
@@ -102,83 +132,113 @@ export default function MyAdsPage() {
             viewport={{ once: true, amount: 0.2 }}
             className="grid gap-6 md:grid-cols-2 xl:grid-cols-3"
           >
-            {products.map((product) => (
-              <motion.article
-                key={product.id}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className="flex flex-col gap-4 rounded-3xl border border-[#d8d5ce] bg-white p-5 shadow-sm"
-              >
-                <div className="relative h-48 w-full overflow-hidden rounded-2xl">
-                  {(() => {
-                    const imageSrc =
-                      product.thumbnail ||
-                      product.images?.[0] ||
-                      "https://images.unsplash.com/photo-1518131678677-a1c53c105fe0?w=600&h=600&fit=crop";
-                    return (
-                      <Image
-                        src={imageSrc}
-                        alt={product.title}
-                        fill
-                        className="object-cover"
-                      />
-                    );
-                  })()}
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <h2 className="text-lg font-semibold text-[#1a1a1a]">
-                      {product.title}
-                    </h2>
-                    <span className="rounded-full bg-[#f5f1e8] px-3 py-1 text-xs uppercase tracking-[0.2em] text-[#4a4a4a]">
-                      {product.category.replace(/-/g, " ")}
+            {sortedListings.map((product) => {
+              const createdDate = product.createdAt
+                ? new Date(product.createdAt)
+                : null;
+              const createdLabel =
+                createdDate && !Number.isNaN(createdDate.getTime())
+                  ? new Intl.DateTimeFormat("en", {
+                      dateStyle: "medium",
+                    }).format(createdDate)
+                  : "Recently added";
+
+              return (
+                <motion.article
+                  key={product.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="flex flex-col gap-4 rounded-3xl border border-[#d8d5ce] p-5"
+                >
+                  <div className="relative h-48 w-full overflow-hidden rounded-2xl">
+                    <Image
+                      src={
+                        product.thumbnail ||
+                        product.images?.[0] ||
+                        "https://images.unsplash.com/photo-1518131678677-a1c53c105fe0?w=600&h=600&fit=crop"
+                      }
+                      alt={product.title}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <h2 className="text-lg font-semibold text-[#1a1a1a]">
+                        {product.title}
+                      </h2>
+                      {product.category ? (
+                        <span className="rounded-full bg-[#f5f1e8] px-3 py-1 text-xs uppercase tracking-[0.2em] text-[#4a4a4a]">
+                          {product.category.replace(/-/g, " ")}
+                        </span>
+                      ) : null}
+                    </div>
+                    {product.description ? (
+                      <p className="line-clamp-3 text-sm text-[#4a4a4a]">
+                        {product.description}
+                      </p>
+                    ) : null}
+                  </div>
+                  <div className="mt-auto flex items-center justify-between text-sm text-[#1a1a1a]">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.2em] text-[#4a4a4a]">
+                        Price
+                      </p>
+                      <p className="text-base font-semibold">
+                        ${Number(product.price ?? 0).toFixed(2)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.2em] text-[#4a4a4a]">
+                        Stock
+                      </p>
+                      <p className="text-base font-semibold">
+                        {product.stock ?? 0}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs text-[#4a4a4a]">
+                      Added {createdLabel}
                     </span>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="flex items-center gap-1 rounded-full border border-[#d8d5ce] px-3 text-xs text-[#1a1a1a] hover:bg-[#f5f1e8]"
+                        onClick={() =>
+                          router.push(`/myads/new?editId=${product.id}`)
+                        }
+                      >
+                        <Pencil size={14} />
+                        Edit
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        disabled={
+                          pendingDeleteId === product.id ||
+                          deleteProductMutation.isPending
+                        }
+                        className="flex items-center gap-1 rounded-full border border-red-200 px-3 text-xs text-red-600 hover:bg-red-50 disabled:opacity-60"
+                        onClick={() => {
+                          const targetRemoteId = product.remoteId ?? product.id;
+                          setPendingDeleteId(product.id);
+                          deleteProductMutation.mutate(targetRemoteId);
+                        }}
+                      >
+                        <Trash2 size={14} />
+                        Delete
+                      </Button>
+                    </div>
                   </div>
-                  <p className="line-clamp-3 text-sm text-[#4a4a4a]">
-                    {product.description}
-                  </p>
-                </div>
-                <div className="mt-auto flex items-center justify-between text-sm text-[#1a1a1a]">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-[#4a4a4a]">
-                      Price
-                    </p>
-                    <p className="text-base font-semibold">
-                      ${Number(product.price).toFixed(2)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-[#4a4a4a]">
-                      Stock
-                    </p>
-                    <p className="text-base font-semibold">{product.stock}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-[#4a4a4a]">
-                      Discount
-                    </p>
-                    <p className="text-base font-semibold">
-                      {product.discountPercentage ?? 0}%
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <Link
-                    className="text-sm font-semibold text-[#1a1a1a] hover:underline"
-                    href={`/products/${product.id}`}
-                  >
-                    View detail
-                  </Link>
-                  <Link
-                    className="text-sm text-[#4a4a4a] underline-offset-2 hover:underline"
-                    href={`/shop?highlight=${product.id}`}
-                  >
-                    View in shop
-                  </Link>
-                </div>
-              </motion.article>
-            ))}
+                </motion.article>
+              );
+            })}
           </motion.div>
         )}
       </div>
