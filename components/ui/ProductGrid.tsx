@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Heart, Handbag, Check } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function ProductGrid({
   product,
@@ -19,10 +20,12 @@ export default function ProductGrid({
   isFavorite: boolean;
   isInCart: boolean;
 }) {
+  const router = useRouter();
   return (
     <article
       key={product.id}
-      className="group flex flex-col gap-4 rounded-2xl border border-gray-200 p-4 transition hover:-translate-y-1"
+      className="group flex flex-col gap-4 rounded-2xl border border-gray-200 p-4 transition hover:-translate-y-1 cursor-pointer"
+      onClick={() => router.push(`/products/${product.id}`)}
     >
       <Link
         href={`/products/${product.id}`}
