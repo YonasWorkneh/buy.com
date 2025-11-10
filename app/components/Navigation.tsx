@@ -7,6 +7,7 @@ const navItems = [
   { href: "/shop", label: "Shop" },
   { href: "/favorites", label: "Favorites" },
   { href: "/cart", label: "Cart" },
+  { href: "/myads", label: "My ads" },
   { href: "/contact", label: "Contact" },
 ];
 

@@ -13,6 +13,7 @@ import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect, useState } from "react";
 import PopularProduct from "./components/PopularProduct";
 import usePopularProducts from "./hooks/usePopularProducts";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
@@ -72,6 +73,29 @@ export default function Home() {
   const cartItems = useAppSelector((state) => state.cart.items);
   const favoriteItems = useAppSelector((state) => state.favorites.items);
   const { products, isLoading, error } = usePopularProducts(20);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    return window.matchMedia("(max-width: 767px)").matches;
+  });
+
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 767px)");
+
+    const handleChange = (event: MediaQueryListEvent) => {
+      setIsMobile(event.matches);
+    };
+
+    if (typeof query.addEventListener === "function") {
+      query.addEventListener("change", handleChange);
+      return () => query.removeEventListener("change", handleChange);
+    }
+
+    query.addListener(handleChange);
+    return () => query.removeListener(handleChange);
+  }, []);
 
   const formattedProducts: FavoriteProductSummary[] = products.map(
     (product) => ({
@@ -117,6 +141,7 @@ export default function Home() {
   };
 
   const popularSkeletons = Array.from({ length: 4 }, (_, index) => index);
+  const shouldAnimatePopular = !isMobile;
 
   return (
     <>
@@ -337,17 +362,19 @@ export default function Home() {
 
           {/* Products Grid */}
           <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={containerVariants}
+            initial={shouldAnimatePopular ? "hidden" : false}
+            whileInView={shouldAnimatePopular ? "visible" : undefined}
+            viewport={
+              shouldAnimatePopular ? { once: true, amount: 0.2 } : undefined
+            }
+            variants={shouldAnimatePopular ? containerVariants : undefined}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
           >
             {isLoading &&
               popularSkeletons.map((item) => (
                 <motion.div
                   key={`popular-skeleton-${item}`}
-                  variants={itemVariants}
+                  variants={shouldAnimatePopular ? itemVariants : undefined}
                   className="group"
                 >
                   <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
@@ -367,7 +394,7 @@ export default function Home() {
 
             {!isLoading && error && (
               <motion.div
-                variants={itemVariants}
+                variants={shouldAnimatePopular ? itemVariants : undefined}
                 className="col-span-full flex flex-col items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-6 py-10 text-center text-red-600"
               >
                 <AlertCircle className="h-6 w-6" />
@@ -380,7 +407,7 @@ export default function Home() {
 
             {!isLoading && !error && formattedProducts.length === 0 && (
               <motion.div
-                variants={itemVariants}
+                variants={shouldAnimatePopular ? itemVariants : undefined}
                 className="col-span-full flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-[#1a1a1a]/20 bg-white px-6 py-12 text-center"
               >
                 <p className="text-lg font-semibold text-[#1a1a1a]">
@@ -398,9 +425,11 @@ export default function Home() {
               formattedProducts.map((product) => (
                 <motion.div
                   key={product.id}
-                  variants={itemVariants}
-                  transition={{ duration: 0.5 }}
-                  whileHover={{ y: -8 }}
+                  variants={shouldAnimatePopular ? itemVariants : undefined}
+                  transition={
+                    shouldAnimatePopular ? { duration: 0.5 } : undefined
+                  }
+                  whileHover={shouldAnimatePopular ? { y: -8 } : undefined}
                   className="group cursor-pointer"
                 >
                   <PopularProduct
