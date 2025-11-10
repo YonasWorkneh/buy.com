@@ -13,6 +13,7 @@ export interface PopularProduct {
   tags: string[];
   images: string[];
   thumbnail: string;
+  availabilityStatus?: string;
 }
 
 interface PopularProductsResponse {
@@ -59,6 +60,11 @@ export async function getProductById(id: number) {
   return response.data;
 }
 
+export async function getProductCategories() {
+  const response = await api.get<string[]>("/products/category-list");
+  return response.data;
+}
+
 export interface ProductSearchResult {
   id: number;
   title: string;
@@ -80,4 +86,40 @@ export async function searchProducts(query: string) {
   });
 
   return response.data.products ?? [];
+}
+
+interface ProductListResponse {
+  products: PopularProduct[];
+  total: number;
+  limit: number;
+  skip: number;
+}
+
+export interface ProductListParams {
+  sortBy?: "title" | "price";
+  order?: "asc" | "desc";
+  limit?: number;
+  skip?: number;
+  category?: string;
+}
+
+export async function getProductsList(
+  params: ProductListParams = {},
+  category?: string
+) {
+  const targetCategory = category ?? params.category;
+  const endpoint = targetCategory
+    ? `/products/category/${targetCategory}`
+    : "/products";
+  const response = await api.get<ProductListResponse>(endpoint, {
+    params: {
+      limit: params.limit ?? 15,
+      skip: params.skip ?? 0,
+      ...(params.sortBy
+        ? { sortBy: params.sortBy, order: params.order ?? "asc" }
+        : {}),
+    },
+  });
+
+  return response.data;
 }

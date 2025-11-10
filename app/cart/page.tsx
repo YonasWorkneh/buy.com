@@ -104,7 +104,7 @@ export default function CartPage() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">
-                <Button asChild variant="outline" className="rounded-full!">
+                <Button asChild className="rounded-full! bg-transparent!">
                   <Link href="/favorites">Add from favorites</Link>
                 </Button>
                 <Button asChild className="rounded-full!">

@@ -15,9 +15,12 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import PopularProduct from "./components/PopularProduct";
 import usePopularProducts from "./hooks/usePopularProducts";
-import { useAppDispatch } from "@/lib/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { addToCart } from "@/lib/store/cartSlice";
-import type { FavoriteProductSummary } from "@/lib/store/favoritesSlice";
+import {
+  toggleFavorite,
+  type FavoriteProductSummary,
+} from "@/lib/store/favoritesSlice";
 
 const reviewImages = [
   "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
@@ -66,6 +69,8 @@ const underlineVariants = {
 
 export default function Home() {
   const dispatch = useAppDispatch();
+  const cartItems = useAppSelector((state) => state.cart.items);
+  const favoriteItems = useAppSelector((state) => state.favorites.items);
   const { products, isLoading, error } = usePopularProducts(20);
 
   const formattedProducts: FavoriteProductSummary[] = products.map(
@@ -79,14 +84,36 @@ export default function Home() {
     })
   );
 
-  const handbagProduct =
-    formattedProducts.find((product) =>
-      product.name.toLowerCase().includes("bag")
-    ) ?? formattedProducts[0];
+  const handleAddToCart = (
+    product: FavoriteProductSummary,
+    isInCart = false
+  ) => {
+    const alreadyInCart =
+      isInCart || cartItems.some((item) => item.id === product.id);
 
-  const handleAddToCart = (product: FavoriteProductSummary) => {
+    if (alreadyInCart) {
+      toast.success("Already in cart.");
+      return;
+    }
+
     dispatch(addToCart(product));
     toast.success("Added to cart!");
+  };
+
+  const handleToggleFavorite = (
+    product: FavoriteProductSummary,
+    isFavorite = false
+  ) => {
+    const alreadyFavorite =
+      isFavorite || favoriteItems.some((item) => item.id === product.id);
+
+    if (alreadyFavorite) {
+      toast.success("Already in favorites.");
+      return;
+    }
+
+    dispatch(toggleFavorite(product));
+    toast.success("Added to favorites!");
   };
 
   const popularSkeletons = Array.from({ length: 4 }, (_, index) => index);
@@ -378,7 +405,8 @@ export default function Home() {
                 >
                   <PopularProduct
                     product={product}
-                    onAddToCart={() => handleAddToCart(product)}
+                    onAddToCart={handleAddToCart}
+                    onToggleFavorite={handleToggleFavorite}
                   />
                 </motion.div>
               ))}

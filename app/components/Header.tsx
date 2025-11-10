@@ -1,9 +1,17 @@
+"use client";
+
 import Link from "next/link";
 import { Handbag, Heart, Plus } from "lucide-react";
 import Navigation from "./Navigation";
 import SearchBar from "./SearchBar";
+import { useAppSelector } from "@/lib/store/hooks";
 
 export default function Header() {
+  const favoritesCount = useAppSelector(
+    (state) => state.favorites.items.length
+  );
+  const cartCount = useAppSelector((state) => state.cart.items.length);
+
   return (
     <header className="w-full px-6 md:px-12 lg:px-16 py-6 flex items-center justify-between bg-[#ede8d048]">
       {/* Logo */}
@@ -22,15 +30,25 @@ export default function Header() {
         <SearchBar />
         <Link
           href={"/favorites"}
-          className="p-2 text-[#1a1a1a] hover:text-[#4a4a4a] transition-colors cursor-pointer"
+          className="relative p-2 text-[#1a1a1a] hover:text-[#4a4a4a] transition-colors cursor-pointer"
         >
           <Heart size={20} />
+          {favoritesCount > 0 && (
+            <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#1a1a1a] px-1 text-[10px] font-semibold text-white">
+              {favoritesCount}
+            </span>
+          )}
         </Link>
         <Link
           href={"/cart"}
-          className="p-2 text-[#1a1a1a] hover:text-[#4a4a4a] transition-colors cursor-pointer"
+          className="relative p-2 text-[#1a1a1a] hover:text-[#4a4a4a] transition-colors cursor-pointer"
         >
           <Handbag size={20} />
+          {cartCount > 0 && (
+            <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#1a1a1a] px-1 text-[10px] font-semibold text-white">
+              {cartCount}
+            </span>
+          )}
         </Link>
         <Link
           href={"/myads/new"}

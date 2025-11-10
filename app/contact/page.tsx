@@ -219,7 +219,7 @@ export default function ContactPage() {
                 name="agree"
                 checked={formData.agree}
                 onChange={handleChange}
-                className="mt-1 h-4 w-4 border border-[#d8d5ce] text-[#1a1a1a] focus:ring-[#8c7a57]"
+                className="mt-1 h-4 w-4 border border-[#d8d5ce] text-[#1a1a1a] focus:ring-[#8c7a57] accent-[#1a1a1a]"
               />
               <span>
                 I have reviewed the{" "}

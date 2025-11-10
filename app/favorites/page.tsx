@@ -62,7 +62,7 @@ export default function FavoritesPage() {
   };
 
   return (
-    <section className="w-full px-6 md:px-12 lg:px-16 py-16 md:py-24">
+    <section className="w-full px-6 md:px-12 lg:px-16 py-8 md:py-10">
       <div className="max-w-6xl mx-auto space-y-10">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
@@ -119,7 +119,7 @@ export default function FavoritesPage() {
                 keep track of them here.
               </p>
             </div>
-            <Button asChild>
+            <Button asChild className="rounded-full!">
               <Link href="/shop">Browse products</Link>
             </Button>
           </motion.div>

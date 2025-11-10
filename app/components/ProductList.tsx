@@ -1,0 +1,89 @@
+import React from "react";
+import { PopularProduct } from "@/lib/services/products";
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Heart, Handbag, Check } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+export default function ProductList({
+  product,
+  onAddToCart,
+  isFavorite,
+  isInCart,
+}: {
+  product: PopularProduct;
+  onAddToCart: (product: PopularProduct) => void;
+  isFavorite: boolean;
+  isInCart: boolean;
+}) {
+  const router = useRouter();
+
+  return (
+    <article
+      key={product.id}
+      className="flex flex-col gap-4 rounded-2xl border border-gray-200 p-4 transition hover:-translate-y-1 md:flex-row cursor-pointer"
+      onClick={() => router.push(`/products/${product.id}`)}
+    >
+      <Link
+        href={`/products/${product.id}`}
+        className="relative h-48 w-full overflow-hidden rounded-xl md:w-48 cursor-pointer"
+      >
+        <Image
+          src={product.images?.[0] || product.thumbnail}
+          alt={product.title}
+          fill
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+      </Link>
+      <div className="flex flex-1 flex-col justify-between gap-3">
+        <div className="space-y-2">
+          <p className="text-xs uppercase tracking-[0.2em] text-[#4a4a4a]">
+            {product.category.replace(/-/g, " ")}
+          </p>
+          <Link
+            href={`/products/${product.id}`}
+            className="text-xl font-semibold text-[#1a1a1a] hover:underline"
+          >
+            {product.title}
+          </Link>
+          <p className="text-sm text-[#4a4a4a] leading-relaxed">
+            {product.description}
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-[#1a1a1a]">
+          <span className="text-lg font-semibold">
+            ${Number(product.price).toFixed(2)}
+          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs uppercase tracking-[0.2em] text-[#4a4a4a]">
+              {product.availabilityStatus ?? "In Stock"}
+            </span>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="rounded-full size-8 bg-transparent text-[#1a1a1a] border border-gray-200  cursor-pointer"
+                onClick={() => onAddToCart(product)}
+              >
+                <Heart
+                  size={16}
+                  className={isFavorite ? "fill-[#1a1a1a]" : ""}
+                />
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                className="rounded-full size-8 bg-transparent text-[#1a1a1a] border border-gray-200 cursor-pointer"
+                onClick={() => onAddToCart(product)}
+              >
+                {isInCart ? <Check size={16} /> : <Handbag size={16} />}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}

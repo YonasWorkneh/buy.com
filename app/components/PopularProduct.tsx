@@ -22,12 +22,17 @@ interface Product {
 
 interface PopularProductProps {
   product: Product;
-  onAddToCart?: (product: FavoriteProductSummary) => void;
+  onAddToCart?: (product: FavoriteProductSummary, isInCart: boolean) => void;
+  onToggleFavorite?: (
+    product: FavoriteProductSummary,
+    isFavorite: boolean
+  ) => void;
 }
 
 export default function PopularProduct({
   product,
   onAddToCart,
+  onToggleFavorite,
 }: PopularProductProps) {
   const dispatch = useAppDispatch();
   const isFavorite = useAppSelector((state) =>
@@ -49,6 +54,10 @@ export default function PopularProduct({
   };
 
   const handleToggleFavorite = () => {
+    if (onToggleFavorite) {
+      onToggleFavorite(payload, isFavorite);
+      return;
+    }
     try {
       dispatch(toggleFavorite(payload));
       if (isFavorite) {
@@ -123,7 +132,7 @@ export default function PopularProduct({
           variant="ghost"
           size="icon"
           className="bg-none! border border-gray-200 text-[#1a1a1a] cursor-pointer"
-          onClick={() => !isInCart && onAddToCart?.(product)}
+          onClick={() => onAddToCart?.(payload, isInCart)}
           aria-label={isInCart ? "In cart" : "Add to cart"}
         >
           {isInCart ? <Check size={20} /> : <Handbag size={20} />}
