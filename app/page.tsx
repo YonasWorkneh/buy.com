@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Handbag, Smartphone, Sofa } from "lucide-react";
 import { motion } from "framer-motion";
+import PopularProduct from "./components/PopularProduct";
 
 const reviewImages = [
   "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
@@ -43,6 +44,52 @@ const imageVariants = {
     y: 0,
   },
 };
+
+const underlineVariants = {
+  hidden: { scaleX: 0 },
+  visible: {
+    scaleX: 1,
+  },
+};
+
+const popularProducts = [
+  {
+    id: 1,
+    name: "Wireless Headphones",
+    price: "$129.99",
+    image:
+      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
+    category: "Electronics",
+    rating: 4,
+  },
+  {
+    id: 2,
+    name: "Smart Watch",
+    price: "$249.99",
+    image:
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop",
+    category: "Electronics",
+    rating: 3.5,
+  },
+  {
+    id: 3,
+    name: "Laptop Bag",
+    price: "$79.99",
+    image:
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
+    category: "Fashion",
+    rating: 5,
+  },
+  {
+    id: 4,
+    name: "Camera",
+    price: "$599.99",
+    image:
+      "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&h=400&fit=crop",
+    category: "Accessory",
+    rating: 2,
+  },
+];
 
 export default function Home() {
   return (
@@ -202,6 +249,62 @@ export default function Home() {
                 className="object-cover"
               />
             </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Popular Products Section */}
+      <section className="w-full px-6 md:px-12 lg:px-16 py-16 md:py-24">
+        <div className="max-w-7xl mx-auto">
+          {/* Section Header with Underlines */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.5 }}
+            className="flex items-center justify-center mb-12 md:mb-16 gap-3 md:gap-4"
+          >
+            {/* Left Underline */}
+            <motion.div
+              variants={underlineVariants}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="h-[2px] bg-[#1a1a1a] flex-1 max-w-[60px] md:max-w-[100px] origin-left"
+            />
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-xl md:text-3xl lg:text-3xl font-bold text-[#1a1a1a] px-4 md:px-8 text-center whitespace-nowrap"
+            >
+              Popular Products
+            </motion.h2>
+            {/* Right Underline */}
+            <motion.div
+              variants={underlineVariants}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="h-[2px] bg-[#1a1a1a] flex-1 max-w-[60px] md:max-w-[100px] origin-right"
+            />
+          </motion.div>
+
+          {/* Products Grid */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
+          >
+            {popularProducts.map((product) => (
+              <motion.div
+                key={product.id}
+                variants={itemVariants}
+                transition={{ duration: 0.5 }}
+                whileHover={{ y: -8 }}
+                className="group cursor-pointer rounded-2xl border border-gray-200 relative"
+              >
+                <PopularProduct product={product} />
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </section>

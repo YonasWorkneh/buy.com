@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 
 const navItems = [
   { href: "/shop", label: "Shop" },
+  { href: "/favorites", label: "Favorites" },
   { href: "/#", label: "About" },
-  { href: "/#", label: "Blogs" },
   { href: "/#", label: "Contact" },
 ];
 
@@ -19,7 +19,7 @@ export default function Navigation() {
         const isActive = pathname === item.href;
         return (
           <Link
-            key={item.href}
+            key={item.label}
             href={item.href}
             className="relative text-[#1a1a1a] hover:text-[#4a4a4a] transition-colors pb-1 group"
           >
