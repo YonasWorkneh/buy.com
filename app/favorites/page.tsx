@@ -66,7 +66,7 @@ export default function FavoritesPage() {
       <div className="max-w-6xl mx-auto space-y-10">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-bold text-[#1a1a1a]">
+            <h1 className="text-2xl md:text-3xl font-bold text-[#1a1a1a]">
               Your Favorites
             </h1>
             <p className="text-[#4a4a4a]">
@@ -151,7 +151,7 @@ export default function FavoritesPage() {
                   >
                     {product.category}
                   </Badge>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
                       <h3 className="text-lg font-semibold text-[#1a1a1a]">
                         {product.name}

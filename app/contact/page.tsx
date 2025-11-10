@@ -1,304 +1,245 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Send, Clock } from "lucide-react";
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.1,
-    },
-  },
-};
+type TextFieldKey = "name" | "phone" | "email" | "subject";
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-    },
+const formFields: Array<{
+  id: TextFieldKey;
+  label: string;
+  type: string;
+  placeholder: string;
+}> = [
+  {
+    id: "name",
+    label: "Name *",
+    type: "text",
+    placeholder: "Your full name",
   },
-};
-
-const underlineVariants = {
-  hidden: { scaleX: 0 },
-  visible: {
-    scaleX: 1,
+  {
+    id: "phone",
+    label: "Phone number",
+    type: "tel",
+    placeholder: "+1 (555) 123-4567",
   },
-};
+  {
+    id: "email",
+    label: "Email *",
+    type: "email",
+    placeholder: "you@buy.com",
+  },
+  {
+    id: "subject",
+    label: "Subject *",
+    type: "text",
+    placeholder: "How can we help?",
+  },
+];
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
+    phone: "",
     email: "",
     subject: "",
     message: "",
+    agree: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const target = e.target as HTMLInputElement | HTMLTextAreaElement;
+    const { name, value } = target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        target instanceof HTMLInputElement && target.type === "checkbox"
+          ? target.checked
+          : value,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.agree) {
+      alert("Please acknowledge our policies before submitting.");
+      return;
+    }
     setIsSubmitting(true);
-    // Simulate form submission
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log("Form submitted:", formData);
+    console.log("Contact form submitted:", formData);
     setIsSubmitting(false);
-    // Reset form
-    setFormData({ name: "", email: "", subject: "", message: "" });
-    alert("Thank you for your message! We'll get back to you soon.");
+    setFormData({
+      name: "",
+      phone: "",
+      email: "",
+      subject: "",
+      message: "",
+      agree: false,
+    });
+    alert("Thanks for reaching out. Our concierge team will respond shortly.");
   };
 
-  const contactInfo = [
-    {
-      icon: Mail,
-      title: "Email",
-      content: "support@buy.com",
-      link: "mailto:support@buy.com",
-    },
-    {
-      icon: Phone,
-      title: "Phone",
-      content: "+1 (555) 123-4567",
-      link: "tel:+15551234567",
-    },
-    {
-      icon: MapPin,
-      title: "Address",
-      content: "123 Shopping Street, City, State 12345",
-      link: "#",
-    },
-    {
-      icon: Clock,
-      title: "Business Hours",
-      content: "Mon-Fri: 9AM-6PM EST",
-      link: "#",
-    },
-  ];
-
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="w-full px-6 md:px-12 lg:px-16 py-16 md:py-24">
-        <div className="max-w-7xl mx-auto">
-          {/* Section Header with Underlines */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.5 }}
-            className="flex items-center justify-center mb-12 md:mb-16 gap-3 md:gap-4"
-          >
-            {/* Left Underline */}
-            <motion.div
-              variants={underlineVariants}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="h-[2px] bg-[#1a1a1a] flex-1 max-w-[60px] md:max-w-[100px] origin-left"
-            />
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.5 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1a1a1a] px-4 md:px-8 text-center whitespace-nowrap"
-            >
-              Contact Us
-            </motion.h1>
-            {/* Right Underline */}
-            <motion.div
-              variants={underlineVariants}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="h-[2px] bg-[#1a1a1a] flex-1 max-w-[60px] md:max-w-[100px] origin-right"
-            />
-          </motion.div>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.5 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-center text-lg md:text-xl text-[#4a4a4a] mb-12 max-w-2xl mx-auto"
-          >
-            Have a question or need assistance? We&apos;d love to hear from you.
-            Send us a message and we&apos;ll respond as soon as possible.
-          </motion.p>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
-            {/* Contact Information */}
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-              variants={containerVariants}
-              className="space-y-6"
-            >
-              <motion.h2
-                variants={itemVariants}
-                className="text-2xl md:text-3xl font-bold text-[#1a1a1a] mb-8"
-              >
-                Get in Touch
-              </motion.h2>
-              <motion.p
-                variants={itemVariants}
-                className="text-[#4a4a4a] mb-8"
-              >
-                We&apos;re here to help! Reach out to us through any of the
-                following channels, or fill out the form and we&apos;ll get back
-                to you.
-              </motion.p>
-
-              <div className="space-y-6">
-                {contactInfo.map((info, index) => {
-                  const Icon = info.icon;
-                  return (
-                    <motion.a
-                      key={index}
-                      href={info.link}
-                      variants={itemVariants}
-                      whileHover={{ x: 5 }}
-                      className="flex items-start gap-4 p-4 rounded-lg hover:bg-white/50 transition-colors group"
-                    >
-                      <div className="p-3 rounded-full bg-[#1a1a1a] text-white group-hover:bg-[#2a2a2a] transition-colors shrink-0">
-                        <Icon size={20} />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-[#1a1a1a] mb-1">
-                          {info.title}
-                        </h3>
-                        <p className="text-[#4a4a4a]">{info.content}</p>
-                      </div>
-                    </motion.a>
-                  );
-                })}
+    <section>
+      <div className="mx-auto grid w-full max-w-6xl py-16 lg:grid-cols-2 lg:px-0">
+        {/* Left column */}
+        <motion.aside
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4 }}
+          className="relative bg-[#f5f1e8] px-10 py-16 text-[#1a1a1a]"
+        >
+          <div className="space-y-12">
+            <section>
+              <p className="text-xs uppercase tracking-[0.4em] text-[#8c7a57]">
+                Address
+              </p>
+              <div className="mt-4 space-y-1 text-lg font-medium">
+                <p>BUY.com Studio</p>
+                <p>90 Commerce Way</p>
+                <p>Brooklyn, NY 11201</p>
               </div>
-            </motion.div>
-
-            {/* Contact Form */}
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-              variants={containerVariants}
-            >
-              <motion.h2
-                variants={itemVariants}
-                className="text-2xl md:text-3xl font-bold text-[#1a1a1a] mb-8"
+              <Link
+                href="https://maps.google.com?q=90+Commerce+Way+Brooklyn+NY+11201"
+                target="_blank"
+                className="mt-4 inline-block text-xs uppercase tracking-[0.3em] text-[#8c7a57]"
               >
-                Send us a Message
-              </motion.h2>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <motion.div variants={itemVariants}>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-[#1a1a1a] mb-2"
-                  >
-                    Name *
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 rounded-lg border border-[#1a1a1a]/20 bg-white focus:outline-none focus:ring-2 focus:ring-[#1a1a1a] focus:border-transparent transition-all"
-                    placeholder="Your name"
-                  />
-                </motion.div>
+                Google Maps
+              </Link>
+            </section>
 
-                <motion.div variants={itemVariants}>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-[#1a1a1a] mb-2"
-                  >
-                    Email *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 rounded-lg border border-[#1a1a1a]/20 bg-white focus:outline-none focus:ring-2 focus:ring-[#1a1a1a] focus:border-transparent transition-all"
-                    placeholder="your.email@example.com"
-                  />
-                </motion.div>
+            <section className="space-y-6">
+              <div>
+                <p className="text-xs uppercase tracking-[0.4em] text-[#8c7a57]">
+                  Contacts
+                </p>
+                <div className="mt-4 space-y-2 text-lg font-medium">
+                  <div>
+                    <a href="tel:+16465558890" className="hover:underline">
+                      +1 (646) 555-8890
+                    </a>
+                    <p className="text-xs uppercase tracking-wide text-[#4a4a4a]">
+                      Client concierge
+                    </p>
+                  </div>
+                  <div>
+                    <a href="tel:+16465558891" className="hover:underline">
+                      +1 (646) 555-8891
+                    </a>
+                    <p className="text-xs uppercase tracking-wide text-[#4a4a4a]">
+                      Priority support
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-                <motion.div variants={itemVariants}>
-                  <label
-                    htmlFor="subject"
-                    className="block text-sm font-medium text-[#1a1a1a] mb-2"
-                  >
-                    Subject *
-                  </label>
-                  <input
-                    type="text"
-                    id="subject"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 rounded-lg border border-[#1a1a1a]/20 bg-white focus:outline-none focus:ring-2 focus:ring-[#1a1a1a] focus:border-transparent transition-all"
-                    placeholder="What is this regarding?"
-                  />
-                </motion.div>
-
-                <motion.div variants={itemVariants}>
-                  <label
-                    htmlFor="message"
-                    className="block text-sm font-medium text-[#1a1a1a] mb-2"
-                  >
-                    Message *
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={6}
-                    className="w-full px-4 py-3 rounded-lg border border-[#1a1a1a]/20 bg-white focus:outline-none focus:ring-2 focus:ring-[#1a1a1a] focus:border-transparent transition-all resize-none"
-                    placeholder="Tell us more about your inquiry..."
-                  />
-                </motion.div>
-
-                <motion.button
-                  variants={itemVariants}
-                  type="submit"
-                  disabled={isSubmitting}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full px-8 py-4 bg-[#1a1a1a] text-white rounded-full text-lg font-medium hover:bg-[#2a2a2a] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {isSubmitting ? (
-                    "Sending..."
-                  ) : (
-                    <>
-                      <Send size={20} />
-                      Send Message
-                    </>
-                  )}
-                </motion.button>
-              </form>
-            </motion.div>
+              <div>
+                <p className="text-xs uppercase tracking-[0.4em] text-[#8c7a57]">
+                  Email
+                </p>
+                <div className="mt-4 space-y-1 text-lg font-medium">
+                  <a href="mailto:hello@buy.com" className="hover:underline">
+                    hello@buy.com
+                  </a>
+                  <p className="text-xs uppercase tracking-wide text-[#4a4a4a]">
+                    We reply within one business day
+                  </p>
+                </div>
+              </div>
+            </section>
           </div>
-        </div>
-      </section>
-    </div>
+        </motion.aside>
+
+        {/* Right column */}
+        <motion.section
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4 }}
+          className="bg-white px-10 py-16"
+        >
+          <div className="max-w-xl">
+            <h1 className="text-xl font-semibold text-[#1a1a1a] uppercase tracking-[0.4em] ">
+              Contact Us
+            </h1>
+            <p className="mt-4 text-sm text-[#4a4a4a] leading-relaxed">
+              Tell us how we can support your shopping experience. Complete the
+              form and a member of our concierge team will reach out shortly.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="mt-10 space-y-6">
+            {formFields.map((field) => (
+              <div key={field.id} className="space-y-2">
+                <label
+                  htmlFor={field.id}
+                  className="text-xs uppercase tracking-[0.2em] text-[#4a4a4a]"
+                >
+                  {field.label}
+                </label>
+                <input
+                  id={field.id}
+                  name={field.id}
+                  type={field.type}
+                  value={formData[field.id]}
+                  onChange={handleChange}
+                  required={field.label.includes("*")}
+                  placeholder={field.placeholder}
+                  className="w-full border-b border-[#d8d5ce] pb-3 text-sm text-[#1a1a1a] focus:border-[#8c7a57] focus:outline-none"
+                />
+              </div>
+            ))}
+
+            <div className="space-y-2">
+              <label
+                htmlFor="message"
+                className="text-xs uppercase tracking-[0.2em] text-[#4a4a4a]"
+              >
+                Message *
+              </label>
+              <textarea
+                id="message"
+                name="message"
+                rows={5}
+                required
+                value={formData.message}
+                onChange={handleChange}
+                placeholder="Share the details of your request…"
+                className="w-full border-b border-[#d8d5ce] pb-3 text-sm text-[#1a1a1a] focus:border-[#8c7a57] focus:outline-none resize-none"
+              />
+            </div>
+
+            <label className="flex items-start gap-3 text-xs text-[#4a4a4a]">
+              <input
+                type="checkbox"
+                name="agree"
+                checked={formData.agree}
+                onChange={handleChange}
+                className="mt-1 h-4 w-4 border border-[#d8d5ce] text-[#1a1a1a] focus:ring-[#8c7a57]"
+              />
+              <span>
+                I have reviewed the{" "}
+                <Link href="#" className="underline">
+                  Terms & Policies
+                </Link>
+                .
+              </span>
+            </label>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full border cursor-pointer border-[#1a1a1a] bg-[#1a1a1a] py-4 text-sm uppercase tracking-[0.4em] text-white transition hover:bg-[#2a2a2a] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isSubmitting ? "Sending…" : "Submit Message"}
+            </button>
+          </form>
+        </motion.section>
+      </div>
+    </section>
   );
 }
-

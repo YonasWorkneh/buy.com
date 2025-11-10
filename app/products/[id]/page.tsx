@@ -260,7 +260,7 @@ export default function ProductDetailPage() {
                   <Button
                     onClick={handleBuyNow}
                     variant="outline"
-                    className="flex-1 gap-2 rounded-none border-2 border-[#1a1a1a] py-6 text-base hover:bg-[#1a1a1a] hover:text-white cursor-pointer"
+                    className="flex-1 gap-2 rounded-none border-1 border-[#1a1a1a] py-6 text-base hover:bg-[#1a1a1a] hover:text-white cursor-pointer"
                   >
                     <CreditCard size={18} />
                     Buy now

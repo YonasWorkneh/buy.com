@@ -1,4 +1,4 @@
-import { Handbag, Heart } from "lucide-react";
+import { Check, Handbag, Heart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
@@ -34,6 +34,9 @@ export default function PopularProduct({
     state.favorites.items.some(
       (item: FavoriteProductSummary) => item.id === product.id
     )
+  );
+  const isInCart = useAppSelector((state) =>
+    state.cart.items.some((item) => item.id === product.id)
   );
 
   const payload: FavoriteProductSummary = {
@@ -120,10 +123,10 @@ export default function PopularProduct({
           variant="ghost"
           size="icon"
           className="bg-none! border border-gray-200 text-[#1a1a1a] cursor-pointer"
-          onClick={() => onAddToCart?.(product)}
-          aria-label="Add to cart"
+          onClick={() => !isInCart && onAddToCart?.(product)}
+          aria-label={isInCart ? "In cart" : "Add to cart"}
         >
-          <Handbag size={20} />
+          {isInCart ? <Check size={20} /> : <Handbag size={20} />}
         </Button>
       </div>
     </div>
