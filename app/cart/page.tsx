@@ -210,17 +210,17 @@ export default function CartPage() {
                   <p className="text-xs text-[#4a4a4a]">
                     Shipping, taxes, and discounts calculated at checkout.
                   </p>
-                  <div className="flex flex-col gap-3 sm:flex-row">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                     <Button
                       variant="outline"
                       onClick={handleClearCart}
-                      className="w-full rounded-full border border-gray-200 text-sm text-[#1a1a1a] hover:bg-[#f5f1e8]"
+                      className="rounded-full border border-gray-200 text-sm text-[#1a1a1a] hover:bg-[#f5f1e8]"
                     >
                       Clear cart
                     </Button>
                     <Button
                       onClick={handleCheckout}
-                      className="w-full rounded-full bg-[#1a1a1a] text-sm text-white hover:bg-[#2a2a2a]"
+                      className="rounded-full bg-[#1a1a1a] text-sm text-white hover:bg-[#2a2a2a] col-span-2"
                     >
                       Checkout
                     </Button>
