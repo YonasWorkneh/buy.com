@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Heart, ShoppingBag } from "lucide-react";
+import { Heart, Plus, ShoppingBag } from "lucide-react";
 import Navigation from "./Navigation";
 import SearchBar from "./SearchBar";
 
@@ -20,12 +20,19 @@ export default function Header() {
       {/* Right side icons and button */}
       <div className="flex items-center gap-4">
         <SearchBar />
-        <button className="p-2 text-[#1a1a1a] hover:text-[#4a4a4a] transition-colors cursor-pointer">
+        <Link
+          href={"/favorites"}
+          className="p-2 text-[#1a1a1a] hover:text-[#4a4a4a] transition-colors cursor-pointer"
+        >
           <Heart size={20} />
-        </button>
-        <button className="hidden sm:block px-6 py-2 bg-[#1a1a1a] text-white rounded-full hover:bg-[#2a2a2a] transition-colors cursor-pointer">
-          Sign Up
-        </button>
+        </Link>
+        <Link
+          href={"/myads/new"}
+          className="px-4 py-1 bg-[#1a1a1a] text-white rounded-full hover:bg-[#2a2a2a] transition-colors cursor-pointer flex items-center justify-center gap-1"
+        >
+          <Plus size={15} />
+          Place add
+        </Link>
       </div>
     </header>
   );

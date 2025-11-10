@@ -7,7 +7,7 @@ const navItems = [
   { href: "/shop", label: "Shop" },
   { href: "/favorites", label: "Favorites" },
   { href: "/#", label: "About" },
-  { href: "/#", label: "Contact" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export default function Navigation() {
@@ -19,7 +19,7 @@ export default function Navigation() {
         const isActive = pathname === item.href;
         return (
           <Link
-            key={item.label}
+            key={item.href}
             href={item.href}
             className="relative text-[#1a1a1a] hover:text-[#4a4a4a] transition-colors pb-1 group"
           >

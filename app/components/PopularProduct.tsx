@@ -14,7 +14,7 @@ interface Product {
 export default function PopularProduct({ product }: { product: Product }) {
   return (
     <>
-      <div className="relative w-full h-[200px] md:h-[250px]">
+      <div className="relative w-full h-[200px] md:h-[250px] ">
         <Image
           src={product.image}
           alt={product.name}
@@ -31,7 +31,7 @@ export default function PopularProduct({ product }: { product: Product }) {
       <div className="flex justify-between items-center">
         {/* category-badge */}
         <div className=" w-fit p-2">
-          <div className="rounded-full border border-gray-200 p-1 text-sm">
+          <div className="rounded-full border border-gray-200 p-1 px-3 text-sm">
             {product.category}
           </div>
         </div>
@@ -40,7 +40,7 @@ export default function PopularProduct({ product }: { product: Product }) {
       </div>
 
       <button
-        className="absolute z-50 top-3 right-3 bg-white rounded-md p-1 border border-gray-200 cursor-pointer"
+        className="absolute z-1000 top-3 right-3 bg-white rounded-md p-1 border border-gray-200 cursor-pointer"
         onClick={() => alert("prodduct favorited")}
       >
         <Heart size={20} />

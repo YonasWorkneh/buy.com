@@ -1,9 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import { Handbag, Smartphone, Sofa } from "lucide-react";
+import Link from "next/link";
+import {
+  AlertCircle,
+  ArrowRight,
+  Handbag,
+  Smartphone,
+  Sofa,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import PopularProduct from "./components/PopularProduct";
+import usePopularProducts from "./hooks/usePopularProducts";
 
 const reviewImages = [
   "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
@@ -37,11 +45,9 @@ const itemVariants = {
 };
 
 const imageVariants = {
-  hidden: { opacity: 0, scale: 0.8, y: 20 },
+  hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    scale: 1,
-    y: 0,
   },
 };
 
@@ -52,63 +58,42 @@ const underlineVariants = {
   },
 };
 
-const popularProducts = [
-  {
-    id: 1,
-    name: "Wireless Headphones",
-    price: "$129.99",
-    image:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
-    category: "Electronics",
-    rating: 4,
-  },
-  {
-    id: 2,
-    name: "Smart Watch",
-    price: "$249.99",
-    image:
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop",
-    category: "Electronics",
-    rating: 3.5,
-  },
-  {
-    id: 3,
-    name: "Laptop Bag",
-    price: "$79.99",
-    image:
-      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
-    category: "Fashion",
-    rating: 5,
-  },
-  {
-    id: 4,
-    name: "Camera",
-    price: "$599.99",
-    image:
-      "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&h=400&fit=crop",
-    category: "Accessory",
-    rating: 2,
-  },
-];
-
 export default function Home() {
+  const { products, isLoading, error } = usePopularProducts(20);
+
+  const formattedProducts = products.map((product) => ({
+    id: product.id,
+    name: product.title,
+    price: `$${Number(product.price).toFixed(2)}`,
+    image: product.images?.[0] || product.thumbnail,
+    category: product.category,
+    rating: Number(product.rating ?? 0),
+  }));
+
+  const popularSkeletons = Array.from({ length: 4 }, (_, index) => index);
+
   return (
     <>
       {/* Hero Section */}
-      <section className="w-full px-6 md:px-12 lg:px-16 py-16 md:py-24 flex flex-col items-center text-center">
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-          className="text-5xl md:text-6xl lg:text-7xl font-bold text-[#1a1a1a] leading-tight mb-6 max-w-4xl"
-        >
-          Shop. Smile. Repeat
-        </motion.h1>
+      <section className="w-full px-6 md:px-12 lg:px-16 md:py-24 flex flex-col items-center">
+        <div className="relative">
+          <p className="text-sm text-[#1a1a1a] absolute top-0 left-2">
+            BUY.COM
+          </p>
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
+            className="text-5xl md:text-6xl lg:text-7xl font-bold text-[#1a1a1a] leading-tight mb-6 max-w-4xl"
+          >
+            Search. Shop. Smile
+          </motion.h1>
+        </div>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.4, 0, 0.2, 1] }}
-          className="text-lg md:text-xl text-[#4a4a4a] mb-8 max-w-2xl"
+          className="text-lg md:text-xl text-[#4a4a4a] mb-8 max-w-2xl text-center"
         >
           Our products are carefully curated, quality-assured & delivered fresh
           to your door daily.
@@ -196,7 +181,7 @@ export default function Home() {
       </section>
 
       {/* Product Image Grid Section */}
-      <section className="w-full px-6 md:px-12 lg:px-16 py-12 md:py-16">
+      <section className="w-full px-6 md:px-12 lg:px-16 md:-mt-40">
         <div className="max-w-6xl mx-auto relative">
           <motion.div
             initial="hidden"
@@ -209,7 +194,6 @@ export default function Home() {
             <motion.div
               variants={imageVariants}
               transition={{ duration: 0.6 }}
-              whileHover={{ scale: 1.05, zIndex: 40 }}
               className="relative w-full md:w-[450px] h-[300px] md:h-[350px] scale-[0.8] rounded-[30px] overflow-hidden shadow-lg z-10 transform md:rotate-12 transition-transform duration-300"
             >
               <Image
@@ -224,7 +208,6 @@ export default function Home() {
             <motion.div
               variants={imageVariants}
               transition={{ duration: 0.6 }}
-              whileHover={{ scale: 1.05, zIndex: 40 }}
               className="relative w-full md:w-[380px] h-[450px] md:h-[500px] rounded-[20px] overflow-hidden shadow-xl z-20 transform md:-rotate-8 transition-transform duration-300"
             >
               <Image
@@ -239,7 +222,6 @@ export default function Home() {
             <motion.div
               variants={imageVariants}
               transition={{ duration: 0.6 }}
-              whileHover={{ scale: 1.05, zIndex: 40 }}
               className="relative w-full md:w-[400px] h-[300px] md:h-[350px] scale-[0.7] rounded-[30px] overflow-hidden shadow-lg z-30 transform md:-rotate-18 transition-transform duration-300 border-5 border-[#Ede8d0] ml-[-80px]"
             >
               <Image
@@ -254,37 +236,54 @@ export default function Home() {
       </section>
 
       {/* Popular Products Section */}
-      <section className="w-full px-6 md:px-12 lg:px-16 py-16 md:py-24">
+      <section className="w-full px-6 md:px-12 lg:px-16 py-16 md:py-24 mt-28">
         <div className="max-w-7xl mx-auto">
           {/* Section Header with Underlines */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.5 }}
-            className="flex items-center justify-center mb-12 md:mb-16 gap-3 md:gap-4"
-          >
-            {/* Left Underline */}
+          <div className="mb-12 md:mb-16 flex flex-col items-center gap-6">
             <motion.div
-              variants={underlineVariants}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="h-[2px] bg-[#1a1a1a] flex-1 max-w-[60px] md:max-w-[100px] origin-left"
-            />
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.5 }}
+              className="flex items-center justify-center gap-3 md:gap-4"
+            >
+              {/* Left Underline */}
+              <motion.div
+                variants={underlineVariants}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="h-[2px] bg-[#1a1a1a] flex-1 max-w-[60px] md:max-w-[100px] origin-left"
+              />
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="text-2xl md:text-3xl lg:text-3xl font-bold text-[#1a1a1a] px-4 md:px-8 text-center whitespace-nowrap"
+              >
+                Popular Products
+              </motion.h2>
+              {/* Right Underline */}
+              <motion.div
+                variants={underlineVariants}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="h-[2px] bg-[#1a1a1a] flex-1 max-w-[60px] md:max-w-[100px] origin-right"
+              />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.5 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-xl md:text-3xl lg:text-3xl font-bold text-[#1a1a1a] px-4 md:px-8 text-center whitespace-nowrap"
+              transition={{ duration: 0.6, delay: 0.4 }}
             >
-              Popular Products
-            </motion.h2>
-            {/* Right Underline */}
-            <motion.div
-              variants={underlineVariants}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="h-[2px] bg-[#1a1a1a] flex-1 max-w-[60px] md:max-w-[100px] origin-right"
-            />
-          </motion.div>
+              <Link
+                href="/shop"
+                className="inline-flex items-center gap-2 rounded-full border border-[#1a1a1a] px-6 py-2 text-sm font-medium text-[#1a1a1a] transition-colors hover:bg-[#1a1a1a] hover:text-white"
+              >
+                View All
+                <ArrowRight size={16} />
+              </Link>
+            </motion.div>
+          </div>
 
           {/* Products Grid */}
           <motion.div
@@ -294,17 +293,64 @@ export default function Home() {
             variants={containerVariants}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
           >
-            {popularProducts.map((product) => (
+            {isLoading &&
+              popularSkeletons.map((item) => (
+                <motion.div
+                  key={`popular-skeleton-${item}`}
+                  variants={itemVariants}
+                  className="border border-gray-200 rounded-2xl p-4 space-y-3 animate-pulse"
+                >
+                  <div className="w-full h-[200px] md:h-[250px] rounded-2xl bg-gray-200" />
+                  <div className="h-4 bg-gray-200 rounded w-3/4" />
+                  <div className="h-4 bg-gray-200 rounded w-1/2" />
+                  <div className="flex justify-between items-center pt-4">
+                    <div className="h-6 bg-gray-200 rounded-full w-24" />
+                    <div className="h-6 bg-gray-200 rounded w-16" />
+                  </div>
+                </motion.div>
+              ))}
+
+            {!isLoading && error && (
               <motion.div
-                key={product.id}
                 variants={itemVariants}
-                transition={{ duration: 0.5 }}
-                whileHover={{ y: -8 }}
-                className="group cursor-pointer rounded-2xl border border-gray-200 relative"
+                className="col-span-full flex flex-col items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-6 py-10 text-center text-red-600"
               >
-                <PopularProduct product={product} />
+                <AlertCircle className="h-6 w-6" />
+                <p className="text-lg font-semibold">Unable to load products</p>
+                <p className="text-sm text-red-500">
+                  {error || "Please try again later."}
+                </p>
               </motion.div>
-            ))}
+            )}
+
+            {!isLoading && !error && formattedProducts.length === 0 && (
+              <motion.div
+                variants={itemVariants}
+                className="col-span-full flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-[#1a1a1a]/20 bg-white px-6 py-12 text-center"
+              >
+                <p className="text-lg font-semibold text-[#1a1a1a]">
+                  No popular products right now
+                </p>
+                <p className="text-sm text-[#4a4a4a] max-w-md">
+                  Check back soon—our team is refreshing the catalog with the
+                  latest best sellers.
+                </p>
+              </motion.div>
+            )}
+
+            {!isLoading &&
+              !error &&
+              formattedProducts.map((product) => (
+                <motion.div
+                  key={product.id}
+                  variants={itemVariants}
+                  transition={{ duration: 0.5 }}
+                  whileHover={{ y: -8 }}
+                  className="group cursor-pointer border border-gray-200 rounded-2xl relative bg-white"
+                >
+                  <PopularProduct product={product} />
+                </motion.div>
+              ))}
           </motion.div>
         </div>
       </section>
