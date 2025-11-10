@@ -1,8 +1,14 @@
 import { Heart } from "lucide-react";
 import Image from "next/image";
+import { toast } from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Rating } from "./Rating";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import {
+  toggleFavorite,
+  type FavoriteProductSummary,
+} from "@/lib/store/favoritesSlice";
 
 interface Product {
   id: number;
@@ -14,6 +20,35 @@ interface Product {
 }
 
 export default function PopularProduct({ product }: { product: Product }) {
+  const dispatch = useAppDispatch();
+  const isFavorite = useAppSelector((state) =>
+    state.favorites.items.some(
+      (item: FavoriteProductSummary) => item.id === product.id
+    )
+  );
+
+  const handleToggleFavorite = () => {
+    const payload: FavoriteProductSummary = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      category: product.category,
+      rating: product.rating,
+    };
+
+    try {
+      dispatch(toggleFavorite(payload));
+      if (isFavorite) {
+        toast.success("Removed from favorites.");
+      } else {
+        toast.success("Added to favorites!");
+      }
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    }
+  };
+
   return (
     <>
       <div className="relative w-full h-[200px] md:h-[250px] ">
@@ -45,10 +80,12 @@ export default function PopularProduct({ product }: { product: Product }) {
         type="button"
         variant="ghost"
         size="icon"
-        className="absolute top-3 right-3 bg-white border border-gray-200 text-[#1a1a1a] hover:bg-white"
-        onClick={() => alert("prodduct favorited")}
+        className="absolute top-3 right-3 bg-white border border-gray-200 text-[#1a1a1a] hover:bg-white cursor-pointer"
+        onClick={handleToggleFavorite}
+        aria-pressed={isFavorite}
+        aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
       >
-        <Heart size={20} />
+        <Heart size={20} className={isFavorite ? "fill-[#1a1a1a]" : ""} />
       </Button>
     </>
   );
