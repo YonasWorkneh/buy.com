@@ -16,7 +16,7 @@ import {
   type FavoriteProductSummary,
 } from "@/lib/store/favoritesSlice";
 import { addToCart } from "@/lib/store/cartSlice";
-import { Rating } from "../components/Rating";
+import { Rating } from "../../components/ui/Rating";
 
 const listVariants = {
   hidden: { opacity: 0, y: 20 },

@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { Rating } from "@/app/components/Rating";
+import { Rating } from "@/components/ui/Rating";
 import { getProductById } from "@/lib/services/products";
 
 export default function ProductDetailPage() {

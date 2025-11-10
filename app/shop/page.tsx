@@ -23,9 +23,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import PaginationControls from "@/app/components/Pagination";
-import ProductList from "../components/ProductList";
-import ProductGrid from "../components/ProductGrid";
+import PaginationControls from "@/components/ui/Pagination";
+import ProductList from "../../components/ui/ProductList";
+import ProductGrid from "../../components/ui/ProductGrid";
 
 type ViewMode = "grid" | "list";
 

@@ -14,7 +14,7 @@ import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
-import PopularProduct from "./components/PopularProduct";
+import PopularProduct from "../components/ui/PopularProduct";
 import usePopularProducts from "./hooks/usePopularProducts";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { addToCart } from "@/lib/store/cartSlice";
