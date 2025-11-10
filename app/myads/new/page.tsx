@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Suspense,
   type ChangeEvent,
   type FormEvent,
   useEffect,
@@ -56,7 +57,7 @@ const createDefaultFormState = (): FormState => ({
   images: [],
 });
 
-export default function AddProductPage() {
+function AddProductPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const editIdParam = searchParams.get("editId");
@@ -570,5 +571,21 @@ export default function AddProductPage() {
         </form>
       </div>
     </section>
+  );
+}
+
+export default function AddProductPage() {
+  return (
+    <Suspense
+      fallback={
+        <section className="w-full px-6 py-16 md:px-12 lg:px-16">
+          <div className="mx-auto max-w-6xl rounded-3xl border border-dashed border-[#d8d5ce] bg-white/50 p-10 text-center text-sm text-[#4a4a4a]">
+            Preparing product form...
+          </div>
+        </section>
+      }
+    >
+      <AddProductPageContent />
+    </Suspense>
   );
 }
