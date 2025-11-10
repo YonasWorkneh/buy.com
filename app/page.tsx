@@ -143,6 +143,10 @@ export default function Home() {
   const popularSkeletons = Array.from({ length: 4 }, (_, index) => index);
   const shouldAnimatePopular = !isMobile;
 
+  useEffect(() => {
+    console.log(isMobile);
+  }, [isMobile]);
+
   return (
     <>
       {/* Hero Section */}
