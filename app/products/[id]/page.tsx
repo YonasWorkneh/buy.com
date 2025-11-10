@@ -20,7 +20,7 @@ import { Badge } from "@/components/ui/badge";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Rating } from "@/app/components/Rating";
-import { getProductById, type ProductDetail } from "@/lib/services/products";
+import { getProductById } from "@/lib/services/products";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -206,7 +206,7 @@ export default function ProductDetailPage() {
                   <button
                     key={img}
                     onClick={() => setImageIndex(index)}
-                    className={`relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl border ${
+                    className={`relative h-24 w-24 shrink-0 overflow-hidden rounded-xl border ${
                       imageIndex === index
                         ? "border-[#1a1a1a]"
                         : "border-gray-200"

@@ -8,6 +8,7 @@ import {
   makeStore,
   loadFavoritesFromStorage,
   persistFavoritesToStorage,
+  persistCartToStorage,
   type AppStore,
 } from "@/lib/store/store";
 
@@ -26,6 +27,7 @@ export default function Providers({ children }: ProvidersProps) {
     const unsubscribe = store.subscribe(() => {
       const { favorites } = store.getState();
       persistFavoritesToStorage(favorites);
+      persistCartToStorage(store.getState().cart);
     });
     return () => unsubscribe();
   }, [store]);

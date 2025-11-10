@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Handbag, Heart, Plus, ShoppingBag } from "lucide-react";
+import { Handbag, Heart, Plus } from "lucide-react";
 import Navigation from "./Navigation";
 import SearchBar from "./SearchBar";
 

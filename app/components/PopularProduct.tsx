@@ -4,12 +4,6 @@ import Link from "next/link";
 import { toast } from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
 import { Rating } from "./Rating";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import {
@@ -89,7 +83,12 @@ export default function PopularProduct({ product }: { product: Product }) {
         <div className="-ml-2">
           <Rating rating={product.rating} />
         </div>
-        <Button asChild variant="outline" size="sm" className="rounded-full">
+        <Button
+          asChild
+          variant="outline"
+          size="sm"
+          className="rounded-full border border-gray-200 bg-transparent px-4 py-2 shadow-none"
+        >
           <Link href={`/products/${product.id}`}>View details</Link>
         </Button>
       </div>
