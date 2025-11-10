@@ -3,6 +3,12 @@ import Image from "next/image";
 import { toast } from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { Rating } from "./Rating";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import {
@@ -50,29 +56,32 @@ export default function PopularProduct({ product }: { product: Product }) {
   };
 
   return (
-    <>
-      <div className="relative w-full h-[200px] md:h-[250px] ">
-        <Image
-          src={product.image}
-          alt={product.name}
-          fill
-          className="object-cover transition-transform duration-300 rounded-t-2xl"
-        />
+    <div className="relative overflow-hidden shadow-none border border-gray-200 rounded-2xl h-[450px]">
+      <div className="p-0">
+        <div className="relative h-[200px] md:h-[250px] w-full overflow-hidden">
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
       </div>
-      <div className="p-3 pb-2">
-        <h3 className="text-md font-semibold text-[#1a1a1a] mb-2">
-          {product.name}
-        </h3>
-        <p className="font-bold text-[#1a1a1a]">{product.price}</p>
-      </div>
-      <div className="flex justify-between items-center px-3 pb-3">
+      <div className="space-y-3 px-4 pb-2 pt-4 bg-none!">
         <Badge
           variant="outline"
-          className="rounded-full border border-gray-200 bg-transparent px-3 py-1 text-sm capitalize text-[#1a1a1a]"
+          className="rounded-full border border-gray-200 bg-transparent px-3 py-1 text-xs capitalize text-[#1a1a1a]"
         >
           {product.category}
         </Badge>
-        {/* rating */}
+        <div>
+          <h3 className="text-lg font-semibold text-[#1a1a1a]">
+            {product.name}
+          </h3>
+          <p className="text-sm text-[#4a4a4a]">{product.price}</p>
+        </div>
+      </div>
+      <div className="flex items-center justify-between border-t border-gray-100 px-4 py-3">
         <Rating rating={product.rating} />
       </div>
 
@@ -80,13 +89,13 @@ export default function PopularProduct({ product }: { product: Product }) {
         type="button"
         variant="ghost"
         size="icon"
-        className="absolute top-3 right-3 bg-white border border-gray-200 text-[#1a1a1a] hover:bg-white cursor-pointer"
+        className="absolute top-3 right-3 bg-white border border-gray-200 text-[#1a1a1a] hover:bg-white"
         onClick={handleToggleFavorite}
         aria-pressed={isFavorite}
         aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
       >
         <Heart size={20} className={isFavorite ? "fill-[#1a1a1a]" : ""} />
       </Button>
-    </>
+    </div>
   );
 }

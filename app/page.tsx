@@ -304,14 +304,19 @@ export default function Home() {
                 <motion.div
                   key={`popular-skeleton-${item}`}
                   variants={itemVariants}
-                  className="border border-gray-200 rounded-2xl p-4 space-y-4 bg-white"
+                  className="group"
                 >
-                  <Skeleton className="h-[200px] md:h-[250px] w-full rounded-xl" />
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
-                  <div className="flex justify-between items-center pt-2">
-                    <Skeleton className="h-6 w-24 rounded-full" />
-                    <Skeleton className="h-6 w-16 rounded-md" />
+                  <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                    <Skeleton className="h-[200px] md:h-[250px] w-full rounded-xl" />
+                    <div className="space-y-3 pt-4">
+                      <Skeleton className="h-4 w-24 rounded-full" />
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-4 w-1/2" />
+                    </div>
+                    <div className="flex justify-between items-center pt-4">
+                      <Skeleton className="h-6 w-24 rounded-full" />
+                      <Skeleton className="h-6 w-16 rounded-md" />
+                    </div>
                   </div>
                 </motion.div>
               ))}
@@ -352,7 +357,7 @@ export default function Home() {
                   variants={itemVariants}
                   transition={{ duration: 0.5 }}
                   whileHover={{ y: -8 }}
-                  className="group cursor-pointer border border-gray-300 rounded-2xl relative"
+                  className="group cursor-pointer"
                 >
                   <PopularProduct product={product} />
                 </motion.div>
