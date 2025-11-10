@@ -1,5 +1,6 @@
 import { Heart } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { toast } from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -56,33 +57,41 @@ export default function PopularProduct({ product }: { product: Product }) {
   };
 
   return (
-    <div className="relative overflow-hidden shadow-none border border-gray-200 rounded-2xl h-[450px]">
+    <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 transition hover:-translate-y-1">
       <div className="p-0">
-        <div className="relative h-[200px] md:h-[250px] w-full overflow-hidden">
+        <Link
+          href={`/products/${product.id}`}
+          className="relative block h-[200px] md:h-[250px] w-full overflow-hidden"
+        >
           <Image
             src={product.image}
             alt={product.name}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
-        </div>
+        </Link>
       </div>
-      <div className="space-y-3 px-4 pb-2 pt-4 bg-none!">
+      <div className="flex flex-1 flex-col gap-3 px-4 pb-2 pt-4">
         <Badge
           variant="outline"
-          className="rounded-full border border-gray-200 bg-transparent px-3 py-1 text-xs capitalize text-[#1a1a1a]"
+          className="w-fit rounded-full border border-gray-200 bg-transparent px-3 py-1 text-xs capitalize text-[#1a1a1a]"
         >
           {product.category}
         </Badge>
-        <div>
-          <h3 className="text-lg font-semibold text-[#1a1a1a]">
+        <Link href={`/products/${product.id}`} className="block space-y-1">
+          <h3 className="text-lg font-semibold text-[#1a1a1a] group-hover:text-[#111]">
             {product.name}
           </h3>
           <p className="text-sm text-[#4a4a4a]">{product.price}</p>
-        </div>
+        </Link>
       </div>
       <div className="flex items-center justify-between border-t border-gray-100 px-4 py-3">
-        <Rating rating={product.rating} />
+        <div className="-ml-2">
+          <Rating rating={product.rating} />
+        </div>
+        <Button asChild variant="outline" size="sm" className="rounded-full">
+          <Link href={`/products/${product.id}`}>View details</Link>
+        </Button>
       </div>
 
       <Button

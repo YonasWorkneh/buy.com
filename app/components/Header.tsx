@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Heart, Plus, ShoppingBag } from "lucide-react";
+import { Handbag, Heart, Plus, ShoppingBag } from "lucide-react";
 import Navigation from "./Navigation";
 import SearchBar from "./SearchBar";
 
@@ -25,6 +25,12 @@ export default function Header() {
           className="p-2 text-[#1a1a1a] hover:text-[#4a4a4a] transition-colors cursor-pointer"
         >
           <Heart size={20} />
+        </Link>
+        <Link
+          href={"/cart"}
+          className="p-2 text-[#1a1a1a] hover:text-[#4a4a4a] transition-colors cursor-pointer"
+        >
+          <Handbag size={20} />
         </Link>
         <Link
           href={"/myads/new"}
