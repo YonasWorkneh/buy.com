@@ -1,6 +1,9 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { getPopularProducts, type PopularProduct } from "@/lib/api";
+import {
+  getPopularProducts,
+  type PopularProduct,
+} from "@/lib/services/products";
 
 interface UsePopularProductsResult {
   products: PopularProduct[];

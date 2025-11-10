@@ -10,6 +10,8 @@ import {
   Sofa,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import PopularProduct from "./components/PopularProduct";
 import usePopularProducts from "./hooks/usePopularProducts";
 
@@ -98,16 +100,16 @@ export default function Home() {
           Our products are carefully curated, quality-assured & delivered fresh
           to your door daily.
         </motion.p>
-        <motion.button
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.4, ease: [0.4, 0, 0.2, 1] }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="px-8 py-4 bg-[#1a1a1a] text-white rounded-full text-lg font-medium hover:bg-[#2a2a2a] transition-colors mb-16 cursor-pointer"
+          className="mb-16"
         >
-          Shop Now
-        </motion.button>
+          <Button size="lg" className="rounded-full px-8 text-lg font-medium">
+            Shop Now
+          </Button>
+        </motion.div>
 
         {/* Social Proof and Categories */}
         <div className="w-full max-w-6xl flex flex-col md:flex-row justify-between items-center gap-6 mt-8">
@@ -275,13 +277,17 @@ export default function Home() {
               viewport={{ once: true, amount: 0.5 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <Link
-                href="/shop"
-                className="inline-flex items-center gap-2 rounded-full border border-[#1a1a1a] px-6 py-2 text-sm font-medium text-[#1a1a1a] transition-colors hover:bg-[#1a1a1a] hover:text-white"
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="rounded-full px-6"
               >
-                View All
-                <ArrowRight size={16} />
-              </Link>
+                <Link href="/shop" className="inline-flex items-center gap-2">
+                  View All
+                  <ArrowRight size={16} />
+                </Link>
+              </Button>
             </motion.div>
           </div>
 
@@ -298,14 +304,14 @@ export default function Home() {
                 <motion.div
                   key={`popular-skeleton-${item}`}
                   variants={itemVariants}
-                  className="border border-gray-200 rounded-2xl p-4 space-y-3 animate-pulse"
+                  className="border border-gray-200 rounded-2xl p-4 space-y-4 bg-white"
                 >
-                  <div className="w-full h-[200px] md:h-[250px] rounded-2xl bg-gray-200" />
-                  <div className="h-4 bg-gray-200 rounded w-3/4" />
-                  <div className="h-4 bg-gray-200 rounded w-1/2" />
-                  <div className="flex justify-between items-center pt-4">
-                    <div className="h-6 bg-gray-200 rounded-full w-24" />
-                    <div className="h-6 bg-gray-200 rounded w-16" />
+                  <Skeleton className="h-[200px] md:h-[250px] w-full rounded-xl" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                  <div className="flex justify-between items-center pt-2">
+                    <Skeleton className="h-6 w-24 rounded-full" />
+                    <Skeleton className="h-6 w-16 rounded-md" />
                   </div>
                 </motion.div>
               ))}
@@ -346,7 +352,7 @@ export default function Home() {
                   variants={itemVariants}
                   transition={{ duration: 0.5 }}
                   whileHover={{ y: -8 }}
-                  className="group cursor-pointer border border-gray-200 rounded-2xl relative bg-white"
+                  className="group cursor-pointer border border-gray-300 rounded-2xl relative"
                 >
                   <PopularProduct product={product} />
                 </motion.div>
