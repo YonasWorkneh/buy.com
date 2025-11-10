@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Search, ShoppingBag } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import Navigation from "./Navigation";
+import SearchBar from "./SearchBar";
 
 export default function Header() {
   return (
@@ -18,9 +19,7 @@ export default function Header() {
 
       {/* Right side icons and button */}
       <div className="flex items-center gap-4">
-        <button className="p-2 text-[#1a1a1a] hover:text-[#4a4a4a] transition-colors">
-          <Search size={20} />
-        </button>
+        <SearchBar />
         <button className="p-2 text-[#1a1a1a] hover:text-[#4a4a4a] transition-colors">
           <ShoppingBag size={20} />
         </button>
