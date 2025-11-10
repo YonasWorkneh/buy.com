@@ -66,10 +66,10 @@ export default function CartPage() {
   };
 
   return (
-    <section className="w-full px-6 md:px-12 lg:px-16 py-16 md:py-24">
-      <div className="max-w-5xl mx-auto space-y-12">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1.5">
+    <section className="w-full px-6 py-16 md:px-12 md:py-20 lg:px-16">
+      <div className="mx-auto flex max-w-6xl flex-col gap-12">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-1.5 text-center md:text-left">
             <p className="text-sm uppercase tracking-[0.3em] text-[#4a4a4a]">
               Your Shopping Cart
             </p>
@@ -77,10 +77,14 @@ export default function CartPage() {
               Review your picks
             </h1>
           </div>
-          <Button variant="ghost" asChild className="rounded-full!">
+          <Button
+            variant="ghost"
+            asChild
+            className="w-full rounded-full border border-gray-200 px-5 py-2 text-[#1a1a1a] hover:bg-[#f5f1e8] md:w-auto"
+          >
             <Link
               href="/shop"
-              className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-5 py-2"
+              className="inline-flex w-full items-center justify-center gap-2 text-sm font-medium md:w-auto"
             >
               <ArrowLeft size={16} />
               Continue shopping
@@ -88,9 +92,9 @@ export default function CartPage() {
           </Button>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           {cartItems.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-[#1a1a1a]/20 px-6 py-16 text-center bg-none!">
+            <div className="flex flex-col items-center justify-center gap-5 rounded-2xl border border-dashed border-[#1a1a1a]/20 px-6 py-16 text-center">
               <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#1a1a1a]/5">
                 <ShoppingCart size={28} className="text-[#1a1a1a]" />
               </div>
@@ -103,106 +107,124 @@ export default function CartPage() {
                   our latest arrivals.
                 </p>
               </div>
-              <div className="flex flex-wrap gap-3">
-                <Button asChild className="rounded-full! bg-transparent!">
-                  <Link href="/favorites">Add from favorites</Link>
+              <div className="flex w-full flex-col gap-3 sm:flex-row sm:justify-center">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full rounded-full border border-gray-200 text-sm text-[#1a1a1a] hover:bg-[#f5f1e8] sm:w-auto"
+                >
+                  <Link href="/favorites" className="w-full">
+                    Add from favorites
+                  </Link>
                 </Button>
-                <Button asChild className="rounded-full!">
-                  <Link href="/shop">Browse products</Link>
+                <Button
+                  asChild
+                  className="w-full rounded-full bg-[#1a1a1a] text-sm text-white hover:bg-[#2a2a2a] sm:w-auto"
+                >
+                  <Link href="/shop" className="w-full">
+                    Browse products
+                  </Link>
                 </Button>
               </div>
             </div>
           ) : (
             <>
-              <div className="space-y-4">
-                {cartItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex flex-col gap-4 rounded-2xl border border-gray-200 p-4 md:flex-row md:items-center md:justify-between"
-                  >
-                    <div className="flex flex-col gap-4 md:flex-row md:items-center">
-                      <div className="relative h-24 w-24 overflow-hidden rounded-xl border border-gray-100">
-                        <Image
-                          src={item.image}
-                          alt={item.name}
-                          fill
-                          className="object-cover"
-                        />
+              <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[minmax(0,2fr)_1fr] lg:items-start lg:gap-10">
+                <div className="space-y-4">
+                  {cartItems.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex flex-col gap-4 rounded-2xl border border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                        <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-gray-100">
+                          <Image
+                            src={item.image}
+                            alt={item.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <h3 className="text-lg font-semibold text-[#1a1a1a]">
+                            {item.name}
+                          </h3>
+                          <p className="text-xs uppercase tracking-[0.3em] text-[#4a4a4a]">
+                            #{item.id}
+                          </p>
+                          <p className="text-sm text-[#4a4a4a] capitalize">
+                            {item.category}
+                          </p>
+                        </div>
                       </div>
-                      <div className="space-y-1">
-                        <h3 className="text-lg font-semibold text-[#1a1a1a]">
-                          {item.name}
-                        </h3>
-                        <p className="text-xs uppercase tracking-[0.3em] text-[#4a4a4a]">
-                          #{item.id}
+
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+                        <div className="flex items-center gap-3">
+                          <button
+                            className="grid size-9 place-items-center rounded-full border border-gray-200 text-[#1a1a1a]"
+                            onClick={() =>
+                              handleDecrease(item.id, item.quantity)
+                            }
+                          >
+                            <Minus size={12} />
+                          </button>
+                          <span className="w-10 text-center text-sm font-semibold text-[#1a1a1a]">
+                            {item.quantity}
+                          </span>
+                          <button
+                            className="grid size-9 place-items-center rounded-full border border-gray-200 text-[#1a1a1a]"
+                            onClick={() =>
+                              handleIncrease(item.id, item.quantity)
+                            }
+                          >
+                            <Plus size={16} />
+                          </button>
+                        </div>
+                        <p className="text-sm font-semibold text-[#1a1a1a]">
+                          {formatCurrency(
+                            Number(item.price.replace(/[^0-9.-]+/g, "")) *
+                              item.quantity
+                          )}
                         </p>
-                        <p className="text-sm text-[#4a4a4a] capitalize">
-                          {item.category}
-                        </p>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleRemove(item.id)}
+                          className="rounded-full text-[#4a4a4a] hover:bg-[#f5f1e8]"
+                          aria-label="Remove item"
+                        >
+                          <X size={18} />
+                        </Button>
                       </div>
                     </div>
-
-                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
-                      <div className="flex items-center gap-3">
-                        <button
-                          className="rounded-full border border-gray-200 text-[#1a1a1a] cursor-pointer size-8 grid place-items-center"
-                          onClick={() => handleDecrease(item.id, item.quantity)}
-                        >
-                          <Minus size={12} />
-                        </button>
-                        <span className="w-10 text-center text-sm font-semibold text-[#1a1a1a]">
-                          {item.quantity}
-                        </span>
-                        <button
-                          className="rounded-full border border-gray-200 text-[#1a1a1a] cursor-pointer size-8 grid place-items-center"
-                          onClick={() => handleIncrease(item.id, item.quantity)}
-                        >
-                          <Plus size={16} />
-                        </button>
-                      </div>
-                      <p className="text-sm font-semibold text-[#1a1a1a]">
-                        {formatCurrency(
-                          Number(item.price.replace(/[^0-9.-]+/g, "")) *
-                            item.quantity
-                        )}
-                      </p>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleRemove(item.id)}
-                        className="rounded-full"
-                        aria-label="Remove item"
-                      >
-                        <X size={18} />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="space-y-4 rounded-2xl border border-gray-200 p-6">
-                <div className="flex items-center justify-between text-[#1a1a1a]">
-                  <span className="text-sm font-medium">Subtotal</span>
-                  <span className="text-lg font-semibold text-[#1a1a1a]">
-                    {formatCurrency(subtotal)}
-                  </span>
+                  ))}
                 </div>
-                <p className="text-xs text-[#4a4a4a]">
-                  Shipping taxes, and discounts calculated at checkout.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <button
-                    onClick={handleClearCart}
-                    className=" text-sm rounded-full bg-none! border border-gray-200 text-[#1a1a1a] cursor-pointer p-4 py-1"
-                  >
-                    Clear cart
-                  </button>
-                  <Button
-                    onClick={handleCheckout}
-                    className="flex-1 rounded-full bg-[#1a1a1a] hover:bg-[#2a2a2a] cursor-pointer"
-                  >
-                    Checkout
-                  </Button>
+
+                <div className="space-y-4 rounded-2xl border border-gray-200 p-6 shadow-sm lg:sticky lg:top-28">
+                  <div className="flex items-center justify-between text-[#1a1a1a]">
+                    <span className="text-sm font-medium">Subtotal</span>
+                    <span className="text-lg font-semibold text-[#1a1a1a]">
+                      {formatCurrency(subtotal)}
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#4a4a4a]">
+                    Shipping, taxes, and discounts calculated at checkout.
+                  </p>
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <Button
+                      variant="outline"
+                      onClick={handleClearCart}
+                      className="w-full rounded-full border border-gray-200 text-sm text-[#1a1a1a] hover:bg-[#f5f1e8]"
+                    >
+                      Clear cart
+                    </Button>
+                    <Button
+                      onClick={handleCheckout}
+                      className="w-full rounded-full bg-[#1a1a1a] text-sm text-white hover:bg-[#2a2a2a]"
+                    >
+                      Checkout
+                    </Button>
+                  </div>
                 </div>
               </div>
             </>
@@ -211,24 +233,24 @@ export default function CartPage() {
 
         {cartItems.length === 0 && favorites.length > 0 && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-[#1a1a1a]">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <h2 className="text-lg font-semibold text-[#1a1a1a] text-center sm:text-left">
                 Favorites you might add
               </h2>
               <Button
                 asChild
                 variant="ghost"
                 size="sm"
-                className="rounded-full!"
+                className="self-center rounded-full text-[#1a1a1a] hover:bg-[#f5f1e8] sm:self-auto"
               >
                 <Link href="/favorites">Manage favorites</Link>
               </Button>
             </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {favorites.slice(0, 2).map((item) => (
                 <div
                   key={item.id}
-                  className="flex flex-col gap-3 rounded-2xl border border-gray-200 p-4 md:flex-row md:items-center md:justify-between"
+                  className="flex flex-col gap-3 rounded-2xl border border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="flex items-center gap-4">
                     <div className="relative h-16 w-16 overflow-hidden rounded-xl">
@@ -248,7 +270,7 @@ export default function CartPage() {
                   </div>
                   <Button
                     size="sm"
-                    className="rounded-full bg-[#1a1a1a] hover:bg-[#2a2a2a]"
+                    className="rounded-full bg-[#1a1a1a] text-white hover:bg-[#2a2a2a]"
                     onClick={() => handleAddFavoriteToCart(item)}
                   >
                     Add to cart

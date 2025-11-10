@@ -10,11 +10,7 @@ import {
 } from "@/lib/services/products";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  LayoutGrid,
-  Rows3,
-  SlidersHorizontal,
-} from "lucide-react";
+import { LayoutGrid, Rows3, SlidersHorizontal } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { addToCart } from "@/lib/store/cartSlice";
 import type { FavoriteProductSummary } from "@/lib/store/favoritesSlice";
