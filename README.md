@@ -92,4 +92,4 @@ All captures live under `public/screenshots/`.
 
 you can find the live demo at [buy.com](https://buycom-psi.vercel.app/)
 
-Enjoy exploring and extending Buy.com! 💼🛒
+Enjoy exploring and extending Buy.com! 💼 🛒
