@@ -365,95 +365,273 @@ export default function Home() {
           </div>
 
           {/* Products Grid */}
-          <motion.div
-            initial={shouldAnimatePopular ? "hidden" : false}
-            whileInView={shouldAnimatePopular ? "visible" : undefined}
-            viewport={
-              shouldAnimatePopular ? { once: true, amount: 0.2 } : undefined
-            }
-            variants={shouldAnimatePopular ? containerVariants : undefined}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
-          >
-            {isLoading &&
-              popularSkeletons.map((item) => (
-                <motion.div
-                  key={`popular-skeleton-${item}`}
-                  variants={shouldAnimatePopular ? itemVariants : undefined}
-                  className="group"
-                >
-                  <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-                    <Skeleton className="h-[200px] md:h-[250px] w-full rounded-xl" />
-                    <div className="space-y-3 pt-4">
-                      <Skeleton className="h-4 w-24 rounded-full" />
-                      <Skeleton className="h-4 w-3/4" />
-                      <Skeleton className="h-4 w-1/2" />
+          {shouldAnimatePopular ? (
+            <motion.div
+              initial={shouldAnimatePopular ? "hidden" : false}
+              whileInView={shouldAnimatePopular ? "visible" : undefined}
+              viewport={
+                shouldAnimatePopular ? { once: true, amount: 0.2 } : undefined
+              }
+              variants={shouldAnimatePopular ? containerVariants : undefined}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
+            >
+              {isLoading &&
+                popularSkeletons.map((item) =>
+                  shouldAnimatePopular ? (
+                    <motion.div
+                      key={`popular-skeleton-${item}`}
+                      variants={shouldAnimatePopular ? itemVariants : undefined}
+                      className="group"
+                    >
+                      <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                        <Skeleton className="h-[200px] md:h-[250px] w-full rounded-xl" />
+                        <div className="space-y-3 pt-4">
+                          <Skeleton className="h-4 w-24 rounded-full" />
+                          <Skeleton className="h-4 w-3/4" />
+                          <Skeleton className="h-4 w-1/2" />
+                        </div>
+                        <div className="flex justify-between items-center pt-4">
+                          <Skeleton className="h-6 w-24 rounded-full" />
+                          <Skeleton className="h-6 w-16 rounded-md" />
+                        </div>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <div
+                      className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm"
+                      key={`popular-skeleton-${item}`}
+                    >
+                      <Skeleton className="h-[200px] md:h-[250px] w-full rounded-xl" />
+                      <div className="space-y-3 pt-4">
+                        <Skeleton className="h-4 w-24 rounded-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                      </div>
                     </div>
-                    <div className="flex justify-between items-center pt-4">
-                      <Skeleton className="h-6 w-24 rounded-full" />
-                      <Skeleton className="h-6 w-16 rounded-md" />
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+                  )
+                )}
 
-            {!isLoading && error && (
-              <motion.div
-                variants={shouldAnimatePopular ? itemVariants : undefined}
-                className="col-span-full flex flex-col items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-6 py-10 text-center text-red-600"
-              >
-                <AlertCircle className="h-6 w-6" />
-                <p className="text-lg font-semibold">Unable to load products</p>
-                <p className="text-sm text-red-500">
-                  {error || "Please try again later."}
-                </p>
-              </motion.div>
-            )}
-
-            {!isLoading && !error && formattedProducts.length === 0 && (
-              <motion.div
-                variants={shouldAnimatePopular ? itemVariants : undefined}
-                className="col-span-full flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-[#1a1a1a]/20 bg-white px-6 py-12 text-center"
-              >
-                <p className="text-lg font-semibold text-[#1a1a1a]">
-                  No popular products right now
-                </p>
-                <p className="text-sm text-[#4a4a4a] max-w-md">
-                  Check back soon—our team is refreshing the catalog with the
-                  latest best sellers.
-                </p>
-              </motion.div>
-            )}
-
-            {!isLoading &&
-              !error &&
-              formattedProducts.map((product) =>
-                shouldAnimatePopular ? (
+              {!isLoading &&
+                error &&
+                (shouldAnimatePopular ? (
                   <motion.div
-                    key={product.id}
                     variants={shouldAnimatePopular ? itemVariants : undefined}
-                    transition={
-                      shouldAnimatePopular ? { duration: 0.5 } : undefined
-                    }
-                    whileHover={shouldAnimatePopular ? { y: -8 } : undefined}
-                    className="group cursor-pointer"
+                    className="col-span-full flex flex-col items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-6 py-10 text-center text-red-600"
                   >
-                    <PopularProduct
-                      product={product}
-                      onAddToCart={handleAddToCart}
-                      onToggleFavorite={handleToggleFavorite}
-                    />
+                    <AlertCircle className="h-6 w-6" />
+                    <p className="text-lg font-semibold">
+                      Unable to load products
+                    </p>
+                    <p className="text-sm text-red-500">
+                      {error || "Please try again later."}
+                    </p>
                   </motion.div>
                 ) : (
-                  <div className="cursor-pointer" key={product.id}>
-                    <PopularProduct
-                      product={product}
-                      onAddToCart={handleAddToCart}
-                      onToggleFavorite={handleToggleFavorite}
-                    />
+                  <div
+                    className="col-span-full flex flex-col items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-6 py-10 text-center text-red-600"
+                    key="error"
+                  >
+                    <AlertCircle className="h-6 w-6" />
+                    <p className="text-lg font-semibold">
+                      Unable to load products
+                    </p>
+                    <p className="text-sm text-red-500">
+                      {error || "Please try again later."}
+                    </p>
                   </div>
-                )
-              )}
-          </motion.div>
+                ))}
+
+              {!isLoading &&
+                !error &&
+                formattedProducts.length === 0 &&
+                (shouldAnimatePopular ? (
+                  <motion.div
+                    variants={shouldAnimatePopular ? itemVariants : undefined}
+                    className="col-span-full flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-[#1a1a1a]/20 bg-white px-6 py-12 text-center"
+                  >
+                    <p className="text-lg font-semibold text-[#1a1a1a]">
+                      No popular products right now
+                    </p>
+                    <p className="text-sm text-[#4a4a4a] max-w-md">
+                      Check back soon—our team is refreshing the catalog with
+                      the latest best sellers.
+                    </p>
+                  </motion.div>
+                ) : (
+                  <div
+                    className="col-span-full flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-[#1a1a1a]/20 bg-white px-6 py-12 text-center"
+                    key="no-products"
+                  >
+                    <p className="text-lg font-semibold text-[#1a1a1a]">
+                      No popular products right now
+                    </p>
+                    <p className="text-sm text-[#4a4a4a] max-w-md">
+                      Check back soon—our team is refreshing the catalog with
+                      the latest best sellers.
+                    </p>
+                  </div>
+                ))}
+
+              {!isLoading &&
+                !error &&
+                formattedProducts.map((product) =>
+                  shouldAnimatePopular ? (
+                    <motion.div
+                      key={product.id}
+                      variants={shouldAnimatePopular ? itemVariants : undefined}
+                      transition={
+                        shouldAnimatePopular ? { duration: 0.5 } : undefined
+                      }
+                      whileHover={shouldAnimatePopular ? { y: -8 } : undefined}
+                      className="group cursor-pointer"
+                    >
+                      <PopularProduct
+                        product={product}
+                        onAddToCart={handleAddToCart}
+                        onToggleFavorite={handleToggleFavorite}
+                      />
+                    </motion.div>
+                  ) : (
+                    <div className="cursor-pointer" key={product.id}>
+                      <PopularProduct
+                        product={product}
+                        onAddToCart={handleAddToCart}
+                        onToggleFavorite={handleToggleFavorite}
+                      />
+                    </div>
+                  )
+                )}
+            </motion.div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+              {isLoading &&
+                popularSkeletons.map((item) =>
+                  shouldAnimatePopular ? (
+                    <motion.div
+                      key={`popular-skeleton-${item}`}
+                      variants={shouldAnimatePopular ? itemVariants : undefined}
+                      className="group"
+                    >
+                      <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                        <Skeleton className="h-[200px] md:h-[250px] w-full rounded-xl" />
+                        <div className="space-y-3 pt-4">
+                          <Skeleton className="h-4 w-24 rounded-full" />
+                          <Skeleton className="h-4 w-3/4" />
+                          <Skeleton className="h-4 w-1/2" />
+                        </div>
+                        <div className="flex justify-between items-center pt-4">
+                          <Skeleton className="h-6 w-24 rounded-full" />
+                          <Skeleton className="h-6 w-16 rounded-md" />
+                        </div>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <div
+                      className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm"
+                      key={`popular-skeleton-${item}`}
+                    >
+                      <Skeleton className="h-[200px] md:h-[250px] w-full rounded-xl" />
+                      <div className="space-y-3 pt-4">
+                        <Skeleton className="h-4 w-24 rounded-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                      </div>
+                    </div>
+                  )
+                )}
+
+              {!isLoading &&
+                error &&
+                (shouldAnimatePopular ? (
+                  <motion.div
+                    variants={shouldAnimatePopular ? itemVariants : undefined}
+                    className="col-span-full flex flex-col items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-6 py-10 text-center text-red-600"
+                  >
+                    <AlertCircle className="h-6 w-6" />
+                    <p className="text-lg font-semibold">
+                      Unable to load products
+                    </p>
+                    <p className="text-sm text-red-500">
+                      {error || "Please try again later."}
+                    </p>
+                  </motion.div>
+                ) : (
+                  <div
+                    className="col-span-full flex flex-col items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-6 py-10 text-center text-red-600"
+                    key="error"
+                  >
+                    <AlertCircle className="h-6 w-6" />
+                    <p className="text-lg font-semibold">
+                      Unable to load products
+                    </p>
+                    <p className="text-sm text-red-500">
+                      {error || "Please try again later."}
+                    </p>
+                  </div>
+                ))}
+
+              {!isLoading &&
+                !error &&
+                formattedProducts.length === 0 &&
+                (shouldAnimatePopular ? (
+                  <motion.div
+                    variants={shouldAnimatePopular ? itemVariants : undefined}
+                    className="col-span-full flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-[#1a1a1a]/20 bg-white px-6 py-12 text-center"
+                  >
+                    <p className="text-lg font-semibold text-[#1a1a1a]">
+                      No popular products right now
+                    </p>
+                    <p className="text-sm text-[#4a4a4a] max-w-md">
+                      Check back soon—our team is refreshing the catalog with
+                      the latest best sellers.
+                    </p>
+                  </motion.div>
+                ) : (
+                  <div
+                    className="col-span-full flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-[#1a1a1a]/20 bg-white px-6 py-12 text-center"
+                    key="no-products"
+                  >
+                    <p className="text-lg font-semibold text-[#1a1a1a]">
+                      No popular products right now
+                    </p>
+                    <p className="text-sm text-[#4a4a4a] max-w-md">
+                      Check back soon—our team is refreshing the catalog with
+                      the latest best sellers.
+                    </p>
+                  </div>
+                ))}
+
+              {!isLoading &&
+                !error &&
+                formattedProducts.map((product) =>
+                  shouldAnimatePopular ? (
+                    <motion.div
+                      key={product.id}
+                      variants={shouldAnimatePopular ? itemVariants : undefined}
+                      transition={
+                        shouldAnimatePopular ? { duration: 0.5 } : undefined
+                      }
+                      whileHover={shouldAnimatePopular ? { y: -8 } : undefined}
+                      className="group cursor-pointer"
+                    >
+                      <PopularProduct
+                        product={product}
+                        onAddToCart={handleAddToCart}
+                        onToggleFavorite={handleToggleFavorite}
+                      />
+                    </motion.div>
+                  ) : (
+                    <div className="cursor-pointer" key={product.id}>
+                      <PopularProduct
+                        product={product}
+                        onAddToCart={handleAddToCart}
+                        onToggleFavorite={handleToggleFavorite}
+                      />
+                    </div>
+                  )
+                )}
+            </div>
+          )}
         </div>
       </section>
     </>
