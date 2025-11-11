@@ -426,23 +426,33 @@ export default function Home() {
 
             {!isLoading &&
               !error &&
-              formattedProducts.map((product) => (
-                <motion.div
-                  key={product.id}
-                  variants={shouldAnimatePopular ? itemVariants : undefined}
-                  transition={
-                    shouldAnimatePopular ? { duration: 0.5 } : undefined
-                  }
-                  whileHover={shouldAnimatePopular ? { y: -8 } : undefined}
-                  className="group cursor-pointer"
-                >
-                  <PopularProduct
-                    product={product}
-                    onAddToCart={handleAddToCart}
-                    onToggleFavorite={handleToggleFavorite}
-                  />
-                </motion.div>
-              ))}
+              formattedProducts.map((product) =>
+                shouldAnimatePopular ? (
+                  <motion.div
+                    key={product.id}
+                    variants={shouldAnimatePopular ? itemVariants : undefined}
+                    transition={
+                      shouldAnimatePopular ? { duration: 0.5 } : undefined
+                    }
+                    whileHover={shouldAnimatePopular ? { y: -8 } : undefined}
+                    className="group cursor-pointer"
+                  >
+                    <PopularProduct
+                      product={product}
+                      onAddToCart={handleAddToCart}
+                      onToggleFavorite={handleToggleFavorite}
+                    />
+                  </motion.div>
+                ) : (
+                  <div className="cursor-pointer" key={product.id}>
+                    <PopularProduct
+                      product={product}
+                      onAddToCart={handleAddToCart}
+                      onToggleFavorite={handleToggleFavorite}
+                    />
+                  </div>
+                )
+              )}
           </motion.div>
         </div>
       </section>

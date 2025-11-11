@@ -65,10 +65,25 @@ npm run start
 
 All captures live under `public/screenshots/`.
 
-| Landing Page                               | Shop (Grid)                          | Product Detail                                           | Cart                                 | My Listings                                   |
-| ------------------------------------------ | ------------------------------------ | -------------------------------------------------------- | ------------------------------------ | --------------------------------------------- |
-| ![Landing](public/screenshots/landing.png) | ![Shop](public/screenshots/shop.png) | ![Product Detail](public/screenshots/product-detail.png) | ![Cart](public/screenshots/cart.png) | ![My Listings](public/screenshots/my-ads.png) |
+#### Landing Page
 
+![Landing](public/screenshots/landing.png)
+
+#### Shop (Grid)
+
+![Shop](public/screenshots/shop.png)
+
+#### Product Detail
+
+![Product Detail](public/screenshots/product-detail.png)
+
+#### Cart
+
+![Cart](public/screenshots/cart.png)
+
+#### My Listings
+
+![My Listings](public/screenshots/my-ads.png)
 
 ---
 
