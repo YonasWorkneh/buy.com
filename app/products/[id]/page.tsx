@@ -311,6 +311,7 @@ export default function ProductDetailPage() {
                     className={`flex-1 gap-2 rounded-none bg-[#1a1a1a] py-6 text-base hover:bg-[#2a2a2a] cursor-pointer ${
                       isInCart ? "cursor-not-allowed" : ""
                     }`}
+                    disabled={isInCart}
                   >
                     <Handbag size={18} />
                     Add to cart
