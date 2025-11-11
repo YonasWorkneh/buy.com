@@ -25,12 +25,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Rating } from "@/components/ui/Rating";
 import { getProductById } from "@/lib/services/products";
 import { AnimatePresence, motion } from "framer-motion";
+import { useAppDispatch } from "@/lib/store/hooks";
+import { addToCart } from "@/lib/store/cartSlice";
+import { FavoriteProductSummary } from "@/lib/store/favoritesSlice";
 
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [imageIndex, setImageIndex] = useState(0);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+  const dispatch = useAppDispatch();
 
   const productId = useMemo(() => {
     const raw = params?.id;
@@ -51,7 +55,17 @@ export default function ProductDetailPage() {
   });
 
   const handleAddToCart = () => {
-    toast.success("Added to cart (simulated)!");
+    dispatch(
+      addToCart({
+        id: product?.id ?? 0,
+        name: product?.title ?? "",
+        price: `$${Number(product?.price).toFixed(2)}`,
+        image: product?.images?.[0] ?? "",
+        category: product?.category ?? "",
+        rating: product?.rating ?? 0,
+      })
+    );
+    toast.success("Added to cart");
   };
 
   const handleBuyNow = () => {
