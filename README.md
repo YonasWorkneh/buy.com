@@ -4,22 +4,6 @@ Buy.com is a fully featured e-commerce experience built with Next.js 14 and the 
 
 ---
 
-## ✨ Highlights
-
-- **Animated Landing Page** – Hero skewed imagery, scroll-triggered sections, framer-motion enhanced reviews/categories, and a “Popular Products” showcase.
-- **Global Navigation & Footer** – Persistent header/footer via `app/layout.tsx`, animated nav hover states, active route indicators, responsive search, and live cart/favorite counters.
-- **Search Experience** – Expanding search input with debounce-backed API results, loading states, and quick navigation to detail pages.
-- **Popular Products** – React Query powered section with skeleton placeholders, “View All” linking into the shop, and shadcn components for consistent styling.
-- **Shop / Catalog** – Grid/list toggle, server-driven filtering (categories, availability), shadcn select sorting, pagination (21 items/page), and loader/empty/error states.
-- **Product Detail** – Amazon-inspired layout with gallery carousel, rating, bullet lists, add-to-cart actions, and toast feedback.
-- **Favorites** – Redux Toolkit slice persisted to localStorage, with dedicated page for management, and hot-toast notifications.
-- **Cart** – Responsive summary layout, quantity controls, empty state messaging, subtotal computation, and “favorites you might add” suggestions.
-- **My Listings ("My Ads")** – Product creation/editing workflow using DummyJSON `/products/add`, React Query, and local IndexedDB storage to persist custom images, with edit/delete operations and responsive cards.
-- **Contact Page** – Animated two-column layout (info + form) aligned with brand styling.
-- **Tech Enhancements** – `usePopularProducts`, `useProductSearch`, global React Query + Redux providers, axios API abstraction, and reusable UI primitives (Badge, Button, Card, Skeleton, Select).
-
----
-
 ## 🧠 Tech Stack
 
 - **Framework**: Next.js 14 (App Router, React Server Components)
