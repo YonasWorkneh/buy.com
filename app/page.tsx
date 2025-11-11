@@ -152,7 +152,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="w-full px-6 md:px-12 lg:px-16 md:py-24 flex flex-col items-center">
         <div className="relative">
-          <p className="text-sm text-[#1a1a1a] absolute top-0 left-2">
+          <p className="text-sm text-[#1a1a1a] absolute -top-1 sm:top-0 left-2">
             BUY.COM
           </p>
           <motion.h1
