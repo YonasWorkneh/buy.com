@@ -25,9 +25,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Rating } from "@/components/ui/Rating";
 import { getProductById } from "@/lib/services/products";
 import { AnimatePresence, motion } from "framer-motion";
-import { useAppDispatch } from "@/lib/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { addToCart } from "@/lib/store/cartSlice";
-import { FavoriteProductSummary } from "@/lib/store/favoritesSlice";
+import { CartItem } from "@/lib/store/cartSlice";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -35,6 +35,7 @@ export default function ProductDetailPage() {
   const [imageIndex, setImageIndex] = useState(0);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const dispatch = useAppDispatch();
+  const cartItems = useAppSelector((state) => state.cart.items);
 
   const productId = useMemo(() => {
     const raw = params?.id;
@@ -53,6 +54,10 @@ export default function ProductDetailPage() {
     enabled: !Number.isNaN(productId),
     staleTime: 1000 * 60 * 5,
   });
+
+  const isInCart = useMemo(() => {
+    return cartItems.some((item: CartItem) => item.id === product?.id);
+  }, [cartItems, product]);
 
   const handleAddToCart = () => {
     dispatch(
@@ -303,7 +308,9 @@ export default function ProductDetailPage() {
                 <div className="flex flex-wrap items-center gap-3">
                   <Button
                     onClick={handleAddToCart}
-                    className="flex-1 gap-2 rounded-none bg-[#1a1a1a] py-6 text-base hover:bg-[#2a2a2a] cursor-pointer"
+                    className={`flex-1 gap-2 rounded-none bg-[#1a1a1a] py-6 text-base hover:bg-[#2a2a2a] cursor-pointer ${
+                      isInCart ? "cursor-not-allowed" : ""
+                    }`}
                   >
                     <Handbag size={18} />
                     Add to cart
