@@ -61,7 +61,7 @@ npm run start
 
 ---
 
-## 🖼️ Screenshots
+## Screenshots
 
 All captures live under `public/screenshots/` (commit your own high-resolution grabs from Chrome/Edge DevTools or your device).
 
@@ -69,7 +69,6 @@ All captures live under `public/screenshots/` (commit your own high-resolution g
 | ------------------------------------------ | ------------------------------------ | -------------------------------------------------------- | ------------------------------------ | --------------------------------------------- |
 | ![Landing](public/screenshots/landing.png) | ![Shop](public/screenshots/shop.png) | ![Product Detail](public/screenshots/product-detail.png) | ![Cart](public/screenshots/cart.png) | ![My Listings](public/screenshots/my-ads.png) |
 
-> Tip: create screenshots with consistent dimensions (e.g., 1440×900) to keep the grid tidy.
 
 ---
 
