@@ -167,11 +167,11 @@ export default function ShopPage() {
   const cart = useAppSelector((state) => state.cart.items);
 
   return (
-    <section className="w-full px-6 md:px-12 lg:px-16 py-10">
-      <div className="max-w-7xl mx-auto">
-        <header className="mb-10">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
+    <section className="w-full px-6 py-12 md:px-12 lg:px-16">
+      <div className="mx-auto max-w-7xl space-y-10">
+        <header>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-center sm:text-left">
               <h1 className="text-3xl font-semibold text-[#1a1a1a]">
                 All Products
               </h1>
@@ -179,11 +179,11 @@ export default function ShopPage() {
                 Showing {startEntry} – {endEntry} of {totalProducts} entries
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex rounded-full border border-[#d8d5ce] bg-white">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <div className="flex w-full rounded-full border border-[#d8d5ce] bg-white sm:w-auto">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm ${
+                  className={`flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-2 text-sm ${
                     viewMode === "grid"
                       ? "bg-[#1a1a1a] text-white"
                       : "text-[#4a4a4a]"
@@ -207,7 +207,7 @@ export default function ShopPage() {
                 </button>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
                 <label
                   htmlFor="sort"
                   className="text-xs uppercase tracking-[0.3em] text-[#4a4a4a]"
@@ -226,7 +226,7 @@ export default function ShopPage() {
                     }
                   }}
                 >
-                  <SelectTrigger className="w-[200px] shadow-none">
+                  <SelectTrigger className="w-full shadow-none sm:w-[200px]">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent className="px-0 w-full">

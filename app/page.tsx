@@ -179,7 +179,10 @@ export default function Home() {
           transition={{ duration: 0.5, delay: 0.4, ease: [0.4, 0, 0.2, 1] }}
           className="mb-16"
         >
-          <Button size="lg" className="rounded-full px-8 text-lg font-medium">
+          <Button
+            size="lg"
+            className="rounded-full px-8 text-lg font-medium cursor-pointer"
+          >
             Shop Now
           </Button>
         </motion.div>
