@@ -63,7 +63,7 @@ npm run start
 
 ## Screenshots
 
-All captures live under `public/screenshots/` (commit your own high-resolution grabs from Chrome/Edge DevTools or your device).
+All captures live under `public/screenshots/`.
 
 | Landing Page                               | Shop (Grid)                          | Product Detail                                           | Cart                                 | My Listings                                   |
 | ------------------------------------------ | ------------------------------------ | -------------------------------------------------------- | ------------------------------------ | --------------------------------------------- |
