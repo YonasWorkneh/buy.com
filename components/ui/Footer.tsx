@@ -80,7 +80,7 @@ export default function Footer() {
             <div className="flex gap-4">
               {socialIcons.map((Icon, index) => (
                 <motion.a
-                  key={Icon.name}
+                  key={index}
                   custom={index}
                   variants={socialVariants}
                   href="#"
@@ -101,7 +101,7 @@ export default function Footer() {
             <ul className="space-y-3">
               {quickLinks.map((link, index) => (
                 <motion.li
-                  key={link.label}
+                  key={index}
                   custom={index}
                   variants={listItemVariants}
                 >
@@ -122,7 +122,7 @@ export default function Footer() {
             <ul className="space-y-3">
               {supportLinks.map((link, index) => (
                 <motion.li
-                  key={link.label}
+                  key={index}
                   custom={index}
                   variants={listItemVariants}
                 >
@@ -155,7 +155,7 @@ export default function Footer() {
               { label: "Privacy Policy", href: "#" },
             ].map((link, index) => (
               <motion.div
-                key={link.label}
+                key={index}
                 custom={index}
                 variants={listItemVariants}
               >
