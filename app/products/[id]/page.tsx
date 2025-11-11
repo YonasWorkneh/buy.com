@@ -13,6 +13,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Handbag,
+  Plus,
+  Minus,
+  User,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -21,11 +24,13 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Rating } from "@/components/ui/Rating";
 import { getProductById } from "@/lib/services/products";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [imageIndex, setImageIndex] = useState(0);
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
   const productId = useMemo(() => {
     const raw = params?.id;
@@ -65,6 +70,13 @@ export default function ProductDetailPage() {
     setImageIndex((prev) =>
       prev === product.images!.length - 1 ? 0 : prev + 1
     );
+  };
+
+  const toggleSection = (id: string) => {
+    setOpenSections((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
   };
 
   if (Number.isNaN(productId)) {
@@ -142,6 +154,31 @@ export default function ProductDetailPage() {
     product.shippingInformation ?? "Ships within 2-5 business days.",
     product.warrantyInformation ?? "Warranty information available on request.",
   ].filter(Boolean);
+
+  const accordionSections = [
+    {
+      id: "dimensions",
+      label: "Specifications",
+      content: product.dimensions
+        ? `Weight: ${product.weight ?? "N/A"}kg · Dimensions: ${
+            product.dimensions.width
+          }cm (W) × ${product.dimensions.height}cm (H) × ${
+            product.dimensions.depth
+          }cm (D)`
+        : `Weight: ${
+            product.weight ?? "N/A"
+          }kg · Dimensions data not available.`,
+    },
+    {
+      id: "return-policy",
+      label: "Return Policy",
+      content:
+        product.returnPolicy ??
+        "Returns accepted within 30 days of purchase in original condition.",
+    },
+  ];
+
+  const reviews = product.reviews ?? [];
 
   return (
     <section className="w-full px-6 md:px-12 lg:px-16 py-16 md:py-24">
@@ -260,7 +297,7 @@ export default function ProductDetailPage() {
                   <Button
                     onClick={handleBuyNow}
                     variant="outline"
-                    className="flex-1 gap-2 rounded-none border-1 border-[#1a1a1a] py-6 text-base hover:bg-[#1a1a1a] hover:text-white cursor-pointer"
+                    className="flex-1 gap-2 rounded-none border border-[#1a1a1a] py-6 text-base hover:bg-[#1a1a1a] hover:text-white cursor-pointer"
                   >
                     <CreditCard size={18} />
                     Buy now
@@ -277,6 +314,94 @@ export default function ProductDetailPage() {
                 ))}
               </ul>
             </div>
+
+            <div className="space-y-4 border-t border-b border-gray-200 py-6">
+              {accordionSections.map(({ id, label, content }) => {
+                const isOpen = openSections[id] ?? false;
+                return (
+                  <div
+                    key={id}
+                    className="border-b border-gray-100 last:border-b-0"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => toggleSection(id)}
+                      className="flex w-full items-center justify-between py-4 text-left text-sm font-semibold uppercase tracking-[0.3em] text-[#1a1a1a]"
+                      aria-expanded={isOpen}
+                    >
+                      {label}
+                      {isOpen ? <Minus size={16} /> : <Plus size={16} />}
+                    </button>
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                        >
+                          <div className="pb-4 text-sm leading-relaxed text-[#4a4a4a]">
+                            {typeof content === "string" ? content : content}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </div>
+
+            {reviews.length > 0 && (
+              <div className="space-y-3">
+                <button
+                  type="button"
+                  onClick={() => toggleSection("reviews")}
+                  className="flex w-full items-center justify-between border-b border-gray-200 pb-4 text-left text-sm font-semibold uppercase tracking-[0.3em] text-[#1a1a1a]"
+                  aria-expanded={openSections["reviews"] ?? false}
+                >
+                  Reviews ({reviews.length})
+                  {openSections["reviews"] ? (
+                    <Minus size={16} />
+                  ) : (
+                    <Plus size={16} />
+                  )}
+                </button>
+                <AnimatePresence initial={false}>
+                  {openSections["reviews"] && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                    >
+                      <div className="space-y-4">
+                        {reviews.map((review) => (
+                          <div
+                            key={`${review.reviewerEmail}-${review.date}`}
+                            className="rounded-2xl p-4"
+                          >
+                            <div className="flex items-center justify-between">
+                              <p className="text-sm font-semibold text-[#1a1a1a] flex items-center gap-2">
+                                <span className="size-8 rounded-full bg-gray-100 flex items-center justify-center">
+                                  <User />
+                                </span>
+                                <span>{review.reviewerName}</span>
+                              </p>
+                              <span className="text-xs text-[#4a4a4a]">
+                                {new Date(review.date).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <p className="mt-2 text-sm leading-relaxed text-[#4a4a4a]">
+                              {review.comment}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
           </div>
         </div>
       </div>
